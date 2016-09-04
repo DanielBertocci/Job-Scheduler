@@ -1,4 +1,4 @@
-#include "DataStructure.h"
+#include "DataContainer.h"
 
 // Utility to parse CSV.
 bool getRow(istream &input, vector<string> &row) {
@@ -22,7 +22,7 @@ void removeLine(istream &input) {
 
 // Initialize matrixes with -1.
 int** matrixInitializer(int p, int q) {
-	int **matrix = new int*[p];
+	int** matrix = new int*[p];
 	for (int i = 0; i < p; ++i)
 		matrix[i] = new int[q];
 
@@ -33,7 +33,7 @@ int** matrixInitializer(int p, int q) {
 	return matrix;
 }
 
-void DataStructure::parseJobsNumber(istream & input)
+void DataContainer::parseJobsNumber(istream & input)
 {
 	vector<string> row;
 	getRow(input, row);
@@ -45,7 +45,7 @@ void DataStructure::parseJobsNumber(istream & input)
 	this->jobs = stoi(row[1]);
 }
 
-void DataStructure::parseMachinesNumber(istream & input)
+void DataContainer::parseMachinesNumber(istream & input)
 {
 	vector<string> row;
 	getRow(input, row);
@@ -57,7 +57,7 @@ void DataStructure::parseMachinesNumber(istream & input)
 	this->machines = stoi(row[1]);
 }
 
-void DataStructure::parseResourcesNumber(istream & input)
+void DataContainer::parseResourcesNumber(istream & input)
 {
 	vector<string> row;
 	getRow(input, row);
@@ -69,7 +69,7 @@ void DataStructure::parseResourcesNumber(istream & input)
 	this->resources = stoi(row[1]);
 }
 
-void DataStructure::parseProcessingTime(istream & in)
+void DataContainer::parseProcessingTime(istream & in)
 {
 	vector<string> row;
 	int jobId, machineId, pTime;
@@ -87,7 +87,7 @@ void DataStructure::parseProcessingTime(istream & in)
 	}
 }
 
-void DataStructure::parseTimeTable(istream & in)
+void DataContainer::parseTimeTable(istream & in)
 {
 	vector<string> row;
 	int jobId, readyTime, dueDate, tardinessPenalty;
@@ -102,13 +102,13 @@ void DataStructure::parseTimeTable(istream & in)
 		readyTime = stoi(row[2]);
 		tardinessPenalty = stoi(row[3]);
 
-		timeTable[jobId - 1][0] = readyTime;
-		timeTable[jobId - 1][1] = dueDate;
+		timeTable[jobId - 1][0] = dueDate;
+		timeTable[jobId - 1][1] = readyTime;
 		timeTable[jobId - 1][2] = tardinessPenalty;
 	}
 }
 
-void DataStructure::parseSetupTimeTable(istream & in)
+void DataContainer::parseSetupTimeTable(istream & in)
 {
 	vector<string> row;
 	int machineId, beforeJob, afterJob, setupTime;
@@ -129,7 +129,7 @@ void DataStructure::parseSetupTimeTable(istream & in)
 	}
 }
 
-void DataStructure::parseResourceQuantity(istream & in)
+void DataContainer::parseResourceQuantity(istream & in)
 {
 	vector<string> row;
 	int resourceId, quantity;
@@ -145,7 +145,7 @@ void DataStructure::parseResourceQuantity(istream & in)
 	}
 }
 
-void DataStructure::parseResourceRequired(istream & in)
+void DataContainer::parseResourceRequired(istream & in)
 {
 	vector<string> row;
 	int jobId, resourceId, rRequired;
@@ -158,13 +158,13 @@ void DataStructure::parseResourceRequired(istream & in)
 		jobId = std::stoi(row[0]);
 		resourceId = std::stoi(row[1]);
 		rRequired = std::stoi(row[2]);
-		
+
 		this->resourceRequired[jobId - 1][resourceId] = rRequired;
 	}
 }
 
 
-DataStructure::DataStructure(ifstream& input)
+DataContainer::DataContainer(ifstream& input)
 {
 	// Start parsing.
 	this->parseJobsNumber(input);
@@ -191,47 +191,62 @@ DataStructure::DataStructure(ifstream& input)
 	input.close();
 }
 
-DataStructure::~DataStructure()
+DataContainer::~DataContainer()
 {
 }
 
-int DataStructure::getProcessingTime(int jobId, int machineId)
+int DataContainer::getJobNumber()
+{
+	return this->jobs;
+}
+
+int DataContainer::getMachineNumber()
+{
+	return this->machines;
+}
+
+int DataContainer::getResourceNumber()
+{
+	return this->resources;
+}
+
+int DataContainer::getProcessingTime(int jobId, int machineId)
 {
 	return this->processingTime[jobId - 1][machineId];
 }
 
-int DataStructure::getDueDate(int jobId)
+int DataContainer::getDueDate(int jobId)
 {
 	return this->timeTable[jobId - 1][0];
 }
 
-int DataStructure::getReleaseDate(int jobId)
+int DataContainer::getReleaseDate(int jobId)
 {
 	return this->timeTable[jobId - 1][1];
 }
 
-int DataStructure::getTardinessPenalty(int jobId)
+int DataContainer::getTardinessPenalty(int jobId)
 {
 	return this->timeTable[jobId - 1][2];
 }
 
-int DataStructure::getSetupTime(int machineId, int beforeJobId, int afterJobId)
+int DataContainer::getSetupTime(int machineId, int beforeJobId, int afterJobId)
 {
-	return this->setupTimeTable[machineId][beforeJobId][afterJobId];
+	return this->setupTimeTable[machineId][beforeJobId - 1][afterJobId - 1];
 }
 
-int DataStructure::getResourceQuantity(int resourceType)
+int DataContainer::getResourceQuantity(int resourceType)
 {
 	return this->resourceQuantity[resourceType];
 }
 
-int DataStructure::getResourceRequired(int jobId, int resourceType)
+int DataContainer::getResourceRequired(int jobId, int resourceType)
 {
-	return this->resourceRequired[jobId][resourceType];
+	return this->resourceRequired[jobId - 1][resourceType];
 }
 
-DataStructure* DataStructure::fromFile(string filename)
+DataContainer* DataContainer::fromFile(string filename)
 {
 	ifstream input(filename);
-	return new DataStructure(input);
+	return new DataContainer(input);
 }

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class DataStructure
+class DataContainer
 {
 private:
 	int jobs;
@@ -41,8 +41,12 @@ private:
 	void parseResourceRequired(istream& in);
 
 public:
-	DataStructure(ifstream& input);
-	~DataStructure();
+	DataContainer(ifstream& input);
+	~DataContainer();
+
+	int getJobNumber();
+	int getMachineNumber();
+	int getResourceNumber();
 
 	// Time getters.
 	int getProcessingTime(int jobId, int machineId);
@@ -56,6 +60,6 @@ public:
 	int getResourceRequired(int jobId, int resourceType);
 
 	// Parsing file.
-	static DataStructure* fromFile(string filename);
+	static DataContainer* fromFile(string filename);
 };
 

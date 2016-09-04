@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <style>
+        *{
+            font-family: 'Roboto', sans-serif;
+        }
+        html, body, body > div{
+            padding: 0;
+            margin: 0;
+            height: 100vh;
+        }
+
+        #timeline{
+            margin: 10px;
+        }
+    </style>
+</head>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    google.charts.load('current', {
+        'packages': ['timeline']
+    });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var container = document.getElementById('timeline');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+
+        dataTable.addColumn({
+            type: 'string',
+            id: 'President'
+        });
+        dataTable.addColumn({
+            type: 'string',
+            id: 'dummy bar label'
+        });
+        dataTable.addColumn({
+            type: 'string',
+            role: 'tooltip',
+            p: { 'html': true }
+        });
+        dataTable.addColumn({
+            type: 'date',
+            id: 'Start'
+        });
+        dataTable.addColumn({
+            type: 'date',
+            id: 'End'
+        });
+        dataTable.addRows([
+          ['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 14</h3><b>Cost:</b> 0<br><b>Start:</b> 20<br><b>End:</b> 79</div>',new Date(0,0,0,0,20),new Date(0,0,0,0,79),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 26</h3><b>Cost:</b> 0<br><b>Start:</b> 95<br><b>End:</b> 107</div>',new Date(0,0,0,0,95),new Date(0,0,0,0,107),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 11</h3><b>Cost:</b> 0<br><b>Start:</b> 111<br><b>End:</b> 141</div>',new Date(0,0,0,0,111),new Date(0,0,0,0,141),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 24</h3><b>Cost:</b> 0<br><b>Start:</b> 144<br><b>End:</b> 225</div>',new Date(0,0,0,0,144),new Date(0,0,0,0,225),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 3</h3><b>Cost:</b> 0<br><b>Start:</b> 232<br><b>End:</b> 243</div>',new Date(0,0,0,0,232),new Date(0,0,0,0,243),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 21</h3><b>Cost:</b> 0<br><b>Start:</b> 247<br><b>End:</b> 286</div>',new Date(0,0,0,0,247),new Date(0,0,0,0,286),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 6</h3><b>Cost:</b> 0<br><b>Start:</b> 296<br><b>End:</b> 317</div>',new Date(0,0,0,0,296),new Date(0,0,0,0,317),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 17</h3><b>Cost:</b> 0<br><b>Start:</b> 322<br><b>End:</b> 415</div>',new Date(0,0,0,0,322),new Date(0,0,0,0,415),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 2</h3><b>Cost:</b> 0<br><b>Start:</b> 422<br><b>End:</b> 480</div>',new Date(0,0,0,0,422),new Date(0,0,0,0,480),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 1</h3><b>Cost:</b> 0<br><b>Start:</b> 486<br><b>End:</b> 558</div>',new Date(0,0,0,0,486),new Date(0,0,0,0,558),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 25</h3><b>Cost:</b> 0<br><b>Start:</b> 566<br><b>End:</b> 570</div>',new Date(0,0,0,0,566),new Date(0,0,0,0,570),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 20</h3><b>Cost:</b> 0<br><b>Start:</b> 577<br><b>End:</b> 620</div>',new Date(0,0,0,0,577),new Date(0,0,0,0,620),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 12</h3><b>Cost:</b> 0<br><b>Start:</b> 624<br><b>End:</b> 684</div>',new Date(0,0,0,0,624),new Date(0,0,0,0,684),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 27</h3><b>Cost:</b> 60<br><b>Start:</b> 690<br><b>End:</b> 699</div>',new Date(0,0,0,0,690),new Date(0,0,0,0,699),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 28</h3><b>Cost:</b> 106<br><b>Start:</b> 711<br><b>End:</b> 722</div>',new Date(0,0,0,0,711),new Date(0,0,0,0,722),],
+['Machine 0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 15</h3><b>Cost:</b> 44<br><b>Start:</b> 741<br><b>End:</b> 776</div>',new Date(0,0,0,0,741),new Date(0,0,0,0,776),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 7</h3><b>Cost:</b> 0<br><b>Start:</b> 4<br><b>End:</b> 63</div>',new Date(0,0,0,0,4),new Date(0,0,0,0,63),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 10</h3><b>Cost:</b> 0<br><b>Start:</b> 66<br><b>End:</b> 115</div>',new Date(0,0,0,0,66),new Date(0,0,0,0,115),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 23</h3><b>Cost:</b> 0<br><b>Start:</b> 127<br><b>End:</b> 226</div>',new Date(0,0,0,0,127),new Date(0,0,0,0,226),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 30</h3><b>Cost:</b> 0<br><b>Start:</b> 232<br><b>End:</b> 247</div>',new Date(0,0,0,0,232),new Date(0,0,0,0,247),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 16</h3><b>Cost:</b> 0<br><b>Start:</b> 256<br><b>End:</b> 309</div>',new Date(0,0,0,0,256),new Date(0,0,0,0,309),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 29</h3><b>Cost:</b> 0<br><b>Start:</b> 318<br><b>End:</b> 398</div>',new Date(0,0,0,0,318),new Date(0,0,0,0,398),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 22</h3><b>Cost:</b> 0<br><b>Start:</b> 401<br><b>End:</b> 467</div>',new Date(0,0,0,0,401),new Date(0,0,0,0,467),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 13</h3><b>Cost:</b> 0<br><b>Start:</b> 467<br><b>End:</b> 501</div>',new Date(0,0,0,0,467),new Date(0,0,0,0,501),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 9</h3><b>Cost:</b> 0<br><b>Start:</b> 505<br><b>End:</b> 568</div>',new Date(0,0,0,0,505),new Date(0,0,0,0,568),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 18</h3><b>Cost:</b> 0<br><b>Start:</b> 571<br><b>End:</b> 599</div>',new Date(0,0,0,0,571),new Date(0,0,0,0,599),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 5</h3><b>Cost:</b> 0<br><b>Start:</b> 604<br><b>End:</b> 624</div>',new Date(0,0,0,0,604),new Date(0,0,0,0,624),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 4</h3><b>Cost:</b> 0<br><b>Start:</b> 630<br><b>End:</b> 699</div>',new Date(0,0,0,0,630),new Date(0,0,0,0,699),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 19</h3><b>Cost:</b> 0<br><b>Start:</b> 711<br><b>End:</b> 712</div>',new Date(0,0,0,0,711),new Date(0,0,0,0,712),],
+['Machine 1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Job 8</h3><b>Cost:</b> 159<br><b>Start:</b> 716<br><b>End:</b> 798</div>',new Date(0,0,0,0,716),new Date(0,0,0,0,798),],
+
+        ]);
+        var options = {
+            height: 700,
+            timeline: {
+                colorByRowLabel: true
+            },
+            tooltip: { isHtml: true },
+        };
+        chart.draw(dataTable, options);
+    }
+
+</script>
+<body>
+    <div id="timeline" style="height: 100%"></div>
+</body>
+</html>

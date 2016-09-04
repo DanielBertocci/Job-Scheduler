@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <style>
+        *{
+            font-family: 'Roboto', sans-serif;
+        }
+        html, body, body > div{
+            padding: 0;
+            margin: 0;
+            height: 100vh;
+        }
+
+        #timeline{
+            margin: 10px;
+        }
+    </style>
+</head>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    google.charts.load('current', {
+        'packages': ['timeline']
+    });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var container = document.getElementById('timeline');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+
+        dataTable.addColumn({
+            type: 'string',
+            id: 'President'
+        });
+        dataTable.addColumn({
+            type: 'string',
+            id: 'dummy bar label'
+        });
+        dataTable.addColumn({
+            type: 'string',
+            role: 'tooltip',
+            p: { 'html': true }
+        });
+        dataTable.addColumn({
+            type: 'date',
+            id: 'Start'
+        });
+        dataTable.addColumn({
+            type: 'date',
+            id: 'End'
+        });
+        dataTable.addRows([
+          ['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 1</h3><b>Start:</b> 0<br><b>End:</b> 53</div>',new Date(0,0,0,0,0),new Date(0,0,0,0,53),],
+['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 14</h3><b>Start:</b> 291<br><b>End:</b> 312</div>',new Date(0,0,0,0,291),new Date(0,0,0,0,312),],
+['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 2</h3><b>Start:</b> 843<br><b>End:</b> 887</div>',new Date(0,0,0,0,843),new Date(0,0,0,0,887),],
+['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 7</h3><b>Start:</b> 143<br><b>End:</b> 242</div>',new Date(0,0,0,0,143),new Date(0,0,0,0,242),],
+['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 13</h3><b>Start:</b> 547<br><b>End:</b> 628</div>',new Date(0,0,0,0,547),new Date(0,0,0,0,628),],
+['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 14</h3><b>Start:</b> 946<br><b>End:</b> 1027</div>',new Date(0,0,0,0,946),new Date(0,0,0,0,1027),],
+['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 6</h3><b>Start:</b> 465<br><b>End:</b> 485</div>',new Date(0,0,0,0,465),new Date(0,0,0,0,485),],
+['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 12</h3><b>Start:</b> 396<br><b>End:</b> 462</div>',new Date(0,0,0,0,396),new Date(0,0,0,0,462),],
+['Resource#0','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 12</h3><b>Start:</b> 742<br><b>End:</b> 824</div>',new Date(0,0,0,0,742),new Date(0,0,0,0,824),],
+['Resource#1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 1</h3><b>Start:</b> 291<br><b>End:</b> 312</div>',new Date(0,0,0,0,291),new Date(0,0,0,0,312),],
+['Resource#1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 9</h3><b>Start:</b> 31<br><b>End:</b> 90</div>',new Date(0,0,0,0,31),new Date(0,0,0,0,90),],
+['Resource#1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 1</h3><b>Start:</b> 106<br><b>End:</b> 136</div>',new Date(0,0,0,0,106),new Date(0,0,0,0,136),],
+['Resource#1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 1</h3><b>Start:</b> 566<br><b>End:</b> 660</div>',new Date(0,0,0,0,566),new Date(0,0,0,0,660),],
+['Resource#1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 7</h3><b>Start:</b> 254<br><b>End:</b> 334</div>',new Date(0,0,0,0,254),new Date(0,0,0,0,334),],
+['Resource#1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 9</h3><b>Start:</b> 843<br><b>End:</b> 887</div>',new Date(0,0,0,0,843),new Date(0,0,0,0,887),],
+['Resource#1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 3</h3><b>Start:</b> 498<br><b>End:</b> 561</div>',new Date(0,0,0,0,498),new Date(0,0,0,0,561),],
+['Resource#1','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 5</h3><b>Start:</b> 336<br><b>End:</b> 395</div>',new Date(0,0,0,0,336),new Date(0,0,0,0,395),],
+['Resource#2','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 1</h3><b>Start:</b> 31<br><b>End:</b> 90</div>',new Date(0,0,0,0,31),new Date(0,0,0,0,90),],
+['Resource#2','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 8</h3><b>Start:</b> 498<br><b>End:</b> 561</div>',new Date(0,0,0,0,498),new Date(0,0,0,0,561),],
+['Resource#2','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 1</h3><b>Start:</b> 126<br><b>End:</b> 141</div>',new Date(0,0,0,0,126),new Date(0,0,0,0,141),],
+['Resource#2','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 8</h3><b>Start:</b> 465<br><b>End:</b> 485</div>',new Date(0,0,0,0,465),new Date(0,0,0,0,485),],
+['Resource#2','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 4</h3><b>Start:</b> 647<br><b>End:</b> 651</div>',new Date(0,0,0,0,647),new Date(0,0,0,0,651),],
+['Resource#2','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 7</h3><b>Start:</b> 254<br><b>End:</b> 334</div>',new Date(0,0,0,0,254),new Date(0,0,0,0,334),],
+['Resource#3','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 5</h3><b>Start:</b> 139<br><b>End:</b> 220</div>',new Date(0,0,0,0,139),new Date(0,0,0,0,220),],
+['Resource#3','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 5</h3><b>Start:</b> 0<br><b>End:</b> 53</div>',new Date(0,0,0,0,0),new Date(0,0,0,0,53),],
+['Resource#3','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 7</h3><b>Start:</b> 70<br><b>End:</b> 119</div>',new Date(0,0,0,0,70),new Date(0,0,0,0,119),],
+['Resource#3','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 2</h3><b>Start:</b> 242<br><b>End:</b> 281</div>',new Date(0,0,0,0,242),new Date(0,0,0,0,281),],
+['Resource#3','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 4</h3><b>Start:</b> 493<br><b>End:</b> 543</div>',new Date(0,0,0,0,493),new Date(0,0,0,0,543),],
+['Resource#3','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 3</h3><b>Start:</b> 946<br><b>End:</b> 1027</div>',new Date(0,0,0,0,946),new Date(0,0,0,0,1027),],
+['Resource#3','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 1</h3><b>Start:</b> 126<br><b>End:</b> 141</div>',new Date(0,0,0,0,126),new Date(0,0,0,0,141),],
+['Resource#3','','<div style = "padding:5px;"><h3 style="border: 1px solid #000; margin-top: 0; padding: 5px;">Quantity 7</h3><b>Start:</b> 647<br><b>End:</b> 651</div>',new Date(0,0,0,0,647),new Date(0,0,0,0,651),],
+
+        ]);
+        var options = {
+            height: 700,
+            timeline: {
+                colorByRowLabel: true
+            },
+            tooltip: { isHtml: true },
+        };
+        chart.draw(dataTable, options);
+    }
+
+</script>
+<body>
+    <div id="timeline" style="height: 100%"></div>
+</body>
+</html>

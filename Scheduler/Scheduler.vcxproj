@@ -125,6 +125,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,16 +144,36 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DataStructure.h" />
+    <ClInclude Include="DataContainer.h" />
     <ClInclude Include="Job.h" />
+    <ClInclude Include="Machine.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="Solver.h" />
+    <ClInclude Include="TemplateResource.h" />
+    <ClInclude Include="ResourceInterval.h" />
+    <ClInclude Include="Scheduler.h" />
+    <ClInclude Include="Solution.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DataStructure.cpp" />
+    <ClCompile Include="DataContainer.cpp" />
     <ClCompile Include="Job.cpp" />
+    <ClCompile Include="Machine.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourceInterval.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
+    <ClCompile Include="Solution.cpp" />
+    <ClCompile Include="Solver.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Scheduler1.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\Desktop\resources.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
