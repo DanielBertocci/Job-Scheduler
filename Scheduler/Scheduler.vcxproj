@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DataContainer.h" />
+    <ClInclude Include="Instant.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="Machine.h" />
     <ClInclude Include="Resource.h" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataContainer.cpp" />
+    <ClCompile Include="Instant.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="Machine.cpp" />
     <ClCompile Include="main.cpp" />

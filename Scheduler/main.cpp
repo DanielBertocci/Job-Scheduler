@@ -17,13 +17,16 @@ int main(int argc, char **argv) {
 	}*/
 
 	//string inputFile = argv[1];
-	string inputFile = "I_30_2_02_02_2.csv";
+	string inputFile = "I_100_3_02_10_4.csv";
+	int time = 36000;
+
 	DataContainer *data = DataContainer::fromFile("C:/Users/Daniel/Desktop/" + inputFile);
 	Solution* solution = new Solution(data);
 	//Solver* solver = new Solver(solution);
 
 	solution->randomSchedule();
 	solution->schedule();
+	cout << "Start cost: " << solution->calcCost() << endl;
 
 	chrono::time_point<std::chrono::system_clock> start, end;
 	start = chrono::system_clock::now();
@@ -33,40 +36,97 @@ int main(int argc, char **argv) {
 	int newCost = INT_MAX;
 	int bestCounter = 0;
 
-	while (elapsed_ms < 7000 && cost > 0) {
-		solution->swapJobsOnMachine();
-		cout << "Soluzione swap:\t\t" << solution->calcCost() << endl;
+	while (elapsed_ms < time && cost > 0) {
 
-		newCost = solution->calcCost();
-		if (newCost < cost) {
-			cost = newCost;
+		// Ottimo per job piccoli
+		/////////////////////////////////////////////
+
+		solution->swapJobsOnMachine();
+		if (solution->calcCost() <= 0) {
+			//solution->printGraph();
 			solution->save();
-			if (cost <= 0) break;
-		}
+			break;
+		};
+
+		solution->save();
+		int tCost = solution->calcCost();
 
 		solution->relaxMachines();
-		cout << "Soluzione relaxed:\t" << solution->calcCost() << endl;
-
-		newCost = solution->calcCost();
-		if (newCost < cost) {
-			cost = newCost;
-			solution->save();
-			if (cost <= 0) break;
-		}
-
 		solution->randomJobSwapBetweenMachines();
-		cout << "Soluzione machine swap:\t" << solution->calcCost() << endl;
+		solution->swapJobsOnMachine();
 
+		int nCost = solution->calcCost();
+
+		if (nCost > tCost) {
+			solution->load();
+		}
+		else {
+			cost = nCost;
+		}
+		if (solution->calcCost() <= 0) {
+			//solution->printGraph();
+			solution->save();
+			break;
+		};
+
+
+		if (rand() % 4 == 0) {
+			solution->tardinessFix();
+			if (solution->calcCost() <= 0) {
+				//solution->printGraph();
+				solution->save();
+				break;
+			};
+		}
+
+		///////////////////////////////////////////////////////////////////////////
+
+		/*solution->randomJobSwapBetweenMachines();
+		solution->swapJobsOnMachine(10);
+		solution->randomJobSwapBetweenMachines();
+		solution->randomJobSwapBetweenMachines();
+		solution->swapJobsOnMachine(3);
+
+		solution->relaxMachines();
 		newCost = solution->calcCost();
 		if (newCost < cost) {
 			cost = newCost;
-			solution->save();
 			if (cost <= 0) break;
-		}
+		}*/
 
-		if (newCost == cost) {
-			bestCounter++;
-		}
+
+		// IGNORANTE
+		//////////////////
+
+		//solution->swapJobsOnMachine();
+		////cout << "Soluzione swap:\t\t" << solution->calcCost() << endl;
+
+		//newCost = solution->calcCost();
+		//if (newCost < cost) {
+		//	cost = newCost;
+		//	solution->save();
+		//	if (cost <= 0) break;
+		//}
+
+		//solution->relaxMachines();
+		////cout << "Soluzione relaxed:\t" << solution->calcCost() << endl;
+
+		//newCost = solution->calcCost();
+		//if (newCost < cost) {
+		//	cost = newCost;
+		//	solution->save();
+		//	if (cost <= 0) break;
+		//}
+
+		//solution->randomJobSwapBetweenMachines();
+		////cout << "Soluzione machine swap:\t" << solution->calcCost() << endl;
+
+		//newCost = solution->calcCost();
+		//if (newCost < cost) {
+		//	cost = newCost;
+		//	solution->save();
+		//	if (cost <= 0) break;
+		//}
 
 		end = chrono::system_clock::now();
 		elapsed_ms = chrono::duration_cast<chrono::milliseconds>(end - start).count();
@@ -79,8 +139,7 @@ int main(int argc, char **argv) {
 	solution->printGraph();
 	solution->printResourceSchedulingGraph();
 
-	cout << "Best result: " << cost << endl;
-	cout << "Best counter: " << bestCounter;
+	cout << "Best result: " << solution->calcCost() << endl;
 	int i;
 	cin >> i;
 	return 0;

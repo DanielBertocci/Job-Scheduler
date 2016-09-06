@@ -44,6 +44,8 @@ public:
 	void reset();
 	void shiftScheduledByDueDate();
 	void randomJobSwap();
+	void partialShuffle();
+	void expansiveJobReschedule();
 	void improveSetup();
 	void improveTryAllSwap();
 	void storeCurrentScheduling();

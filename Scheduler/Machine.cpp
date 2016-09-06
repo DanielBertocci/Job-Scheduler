@@ -207,6 +207,58 @@ void Machine::randomJobSwap()
 	iter_swap(first, second);
 }
 
+void Machine::partialShuffle()
+{
+	/*int begin = floor(this->scheduledJobs.size() / 4);
+	int end = ceil((3 * this->scheduledJobs.size()) / 4);
+	list<Job*>::iterator startShuffleIterator = next(this->scheduledJobs.begin(), begin);
+	list<Job*>::iterator endShuffleIterator = next(this->scheduledJobs.begin(), end);
+	int counter = 0;
+	while (counter < end - begin) {
+		iter_swap(startShuffleIterator);
+	}
+	this->scheduleFrom(startShuffleIterator);*/
+}
+
+void Machine::expansiveJobReschedule()
+{
+	// Get the most expansive job.
+	list<Job*>::iterator exspansiveJobIterator = this->scheduledJobs.begin();
+	list<Job*>::iterator current = this->scheduledJobs.begin();
+	while (current != this->scheduledJobs.end()) {
+		if ((*current)->getCost() > (*exspansiveJobIterator)->getCost()) {
+			exspansiveJobIterator = current;
+		}
+		current = next(current);
+	}
+
+	int cost = this->cost;
+
+	// One of the first three job schedule position.
+	auto earlyJobIterator = next(this->scheduledJobs.begin(), rand() % 3);
+	iter_swap(earlyJobIterator, exspansiveJobIterator);
+	this->schedule();
+
+	if (this->cost > cost) {
+		iter_swap(exspansiveJobIterator, earlyJobIterator);
+		this->scheduleFrom(earlyJobIterator);
+		return;
+	}
+
+	cost = this->cost;
+
+	do {
+		iter_swap(earlyJobIterator, next(earlyJobIterator));
+		this->scheduleFrom(earlyJobIterator);
+		earlyJobIterator = next(earlyJobIterator);
+		cost = this->cost;
+	} while (this->cost < cost && earlyJobIterator != this->scheduledJobs.end());
+
+	iter_swap(exspansiveJobIterator, prev(exspansiveJobIterator));
+	this->scheduleFrom(earlyJobIterator);
+	return;
+}
+
 void Machine::improveSetup()
 {
 	this->storeCurrentScheduling();

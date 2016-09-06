@@ -33,6 +33,11 @@ int Job::getReadyDate() const
 	return this->readyDate;
 }
 
+int Job::getDueDate() const
+{
+	return this->dueDate;
+}
+
 int Job::getResourceCount() const
 {
 	int counter = 0;

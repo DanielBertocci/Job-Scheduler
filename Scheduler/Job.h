@@ -31,6 +31,7 @@ public:
 	int getStart();
 	int getEnd();
 	int getReadyDate() const;
+	int getDueDate() const;
 	int getResourceCount() const;
 	unordered_map<Resource*, int> getRequiredResources() const;
 	Machine* getMachine();

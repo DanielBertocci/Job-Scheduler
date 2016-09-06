@@ -211,7 +211,25 @@ void Solution::print(ostream & out)
 }
 void Solution::swapJobsOnMachine()
 {
-	for (int i = 0; i < 4; ++i) {
+	this->swapJobsOnMachine(4);
+}
+void Solution::partialShuffle()
+{
+	for (Machine* machine : this->machines) {
+		machine->partialShuffle();
+	}
+}
+void Solution::tardinessFix()
+{
+	random_shuffle(this->machines.begin(), this->machines.end());
+	for (Machine* m : this->machines) {
+		m->expansiveJobReschedule();
+	}
+}
+void Solution::swapJobsOnMachine(int iterations)
+{
+	random_shuffle(this->machines.begin(), this->machines.end());
+	for (int i = 0; i < iterations; ++i) {
 		for (Machine* machine : this->machines) {
 			machine->improveTryAllSwap();
 		}
@@ -242,7 +260,7 @@ void Solution::printGraph()
 		ss << "'Machine " << job->getMachine()->getId() << "',";
 		ss << "'','";
 		ss << "<div style = \"padding:5px;\">";
-		ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Job " << job->getId() << "</h3><b>Cost:</b> " << job->getCost() << "<br><b>Start:</b> " << job->getStart() << "<br><b>End:</b> " << job->getEnd();
+		ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Job " << job->getId() << "</h3><b>Cost:</b> " << job->getCost() << "<br><b>Start:</b> " << job->getStart() << "<br><b>End:</b> " << job->getEnd() << "<br><b>Due Date:</b> " << job->getDueDate() << "<br><b>Ready Date:</b> " << job->getReadyDate();
 		ss << "</div>";
 		ss << "',";
 		ss << "new Date(0,0,0,0," << job->getStart() << "),";

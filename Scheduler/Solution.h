@@ -39,6 +39,9 @@ public:
 	void randomJobSwapBetweenMachines();
 	void print(ostream& out);
 	void swapJobsOnMachine();
+	void partialShuffle();
+	void tardinessFix();
+	void swapJobsOnMachine(int iterations);
 	void setupTest();
 	void printGraph();
 	void printResourceSchedulingGraph();
