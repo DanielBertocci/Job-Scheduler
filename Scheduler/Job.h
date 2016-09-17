@@ -8,6 +8,8 @@
 using namespace std;
 
 class Machine;
+class Instant;
+class Resource;
 
 class Job
 {
@@ -17,7 +19,7 @@ private:
 	int dueDate;
 	int penalty;
 	unordered_map<Resource*, int> resources;
-	unordered_map<Resource*, ResourceInterval* > intervals;
+	unordered_map<Resource*, pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> > instants;
 
 	int start;
 	int end;
@@ -33,15 +35,15 @@ public:
 	int getReadyDate() const;
 	int getDueDate() const;
 	int getResourceCount() const;
+	int getCost();
 	unordered_map<Resource*, int> getRequiredResources() const;
 	Machine* getMachine();
 	void reset();
-	void resetIntervals();
+	void resetInstants();
 	void setSchedule(int start, int processingTime);
 	void setMachine(Machine* machine);
-	int getCost();
 	string toString();
-	void addInterval(Resource* resource, ResourceInterval* interval);
+	void addInstant(Resource* resource, pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> interval);
 	static bool startBefore(const Job* job1, const Job* job2);
 	static bool dueDateBefore(const Job* job1, const Job* job2);
 	static bool readyDateBefore(const Job* job1, const Job* job2);

@@ -153,6 +153,7 @@
     <ClInclude Include="Job.h" />
     <ClInclude Include="Machine.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="Solver.h" />
     <ClInclude Include="TemplateResource.h" />
     <ClInclude Include="ResourceInterval.h" />
@@ -172,10 +173,10 @@
     <ClCompile Include="Solver.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Scheduler1.rc" />
+    <None Include="..\..\..\..\..\Desktop\resources.html" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Desktop\resources.html" />
+    <ResourceCompile Include="Scheduler1.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

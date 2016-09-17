@@ -62,17 +62,19 @@ void Job::reset()
 	this->machine = nullptr;
 	this->start = NULL;
 	this->end = NULL;
-	this->resetIntervals();
+	this->resetInstants();
 }
 
-void Job::resetIntervals()
+void Job::resetInstants()
 {
-	for (pair<Resource*, ResourceInterval*> pair : this->intervals)
+	for (pair<Resource*, pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator>> pair : this->instants)
 	{
-		pair.first->free(pair.second);
-		delete pair.second;
+		pair.first->free(pair.second.first);
+		pair.first->free(pair.second.second);
+		/*delete *pair.second.first;
+		delete *pair.second.second;*/
 	}
-	this->intervals.clear();
+	this->instants.clear();
 }
 
 void Job::setSchedule(int start, int processingTime)
@@ -96,9 +98,9 @@ string Job::toString()
 	return "Job#" + to_string(this->id);
 }
 
-void Job::addInterval(Resource * resource, ResourceInterval * interval)
+void Job::addInstant(Resource * resource, pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> interval)
 {
-	this->intervals[resource] = interval;
+	this->instants[resource] = interval;
 }
 
 bool Job::startBefore(const Job * job1, const Job * job2)

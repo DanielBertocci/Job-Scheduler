@@ -15,6 +15,7 @@ private:
 	int id;
 	int time = 0;
 	int cost = 0;
+	int previousCost;
 	bool scheduled = false;
 	unordered_map<Job*,int> processingTime;
 	unordered_map<Job*, unordered_map<Job*, int>> setupTime;
@@ -36,6 +37,8 @@ public:
 
 	int getId();
 	int getCost();
+	int getTime();
+	int getJobProcessingTime(Job* job);
 	bool addJob(Job* job);
 	void schedule();
 	Job* getLastScheduledJob();
@@ -52,5 +55,6 @@ public:
 	bool swapRandomJobToMachine(Machine* machine);
 	bool sendFirstAvailableJobToMachine(Machine* machine);
 	void previousSchedule();
+	void bestScheduleForCurrentJobs();
 };
 

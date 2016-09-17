@@ -245,8 +245,33 @@ int DataContainer::getResourceRequired(int jobId, int resourceType)
 	return this->resourceRequired[jobId - 1][resourceType];
 }
 
+string DataContainer::getFile()
+{
+	string file;
+	const size_t last_slash_idx = this->file.find_last_of("\\/");
+	if (std::string::npos != last_slash_idx)
+		file = this->file.substr(last_slash_idx + 1);
+	return file;
+}
+
+string DataContainer::getSolutionFile()
+{
+	string file = this->file;
+	const size_t last_slash_idx = file.find_last_of("\\/");
+	if (std::string::npos != last_slash_idx)
+		file = file.substr(last_slash_idx + 1);
+	return file.substr(0, file.size() - 4) + "_sol.csv";
+}
+
+void DataContainer::setFile(string file)
+{
+	this->file = file;
+}
+
 DataContainer* DataContainer::fromFile(string filename)
 {
 	ifstream input(filename);
-	return new DataContainer(input);
+	DataContainer* dc = new DataContainer(input);
+	dc->setFile(filename);
+	return dc;
 }

@@ -45,17 +45,17 @@ void Machine::scheduleFrom(list<Job*>::iterator iterator)
 		// Search first interval with all resources required.
 		if (job->getRequiredResources().size() == 1) {
 			for (pair<Resource*, int> r : job->getRequiredResources()) {
-				ResourceInterval* i = r.first->useFirstFreeSlot(this->time, this->processingTime[job], r.second);
-				job->addInterval(r.first, i);
-				this->time = max(this->time, i->getStart());
+				pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> i = r.first->useFirstFreeSlot(this->time, this->processingTime[job], r.second);
+				job->addInstant(r.first, i);
+				this->time = (*i.first)->getTime();
 			}
 		}
 		else {
 			int firstStartAvailable = this->getStartForAllResources(job, this->time);
-			ResourceInterval* check = nullptr;
+			pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> check;
 			for (pair<Resource*, int> r : job->getRequiredResources()) {
 				check = r.first->use(firstStartAvailable, this->processingTime[job], r.second);
-				job->addInterval(r.first, check);
+				job->addInstant(r.first, check);
 			}
 			this->time = firstStartAvailable;
 		}
@@ -74,7 +74,7 @@ void Machine::scheduleFrom(list<Job*>::iterator iterator)
 void Machine::resetJobResourcesFrom(list<Job*>::iterator iterator)
 {
 	while (iterator != this->scheduledJobs.end()) {
-		(*iterator)->resetIntervals();
+		(*iterator)->resetInstants();
 		++iterator;
 	}
 }
@@ -97,7 +97,7 @@ int Machine::getStartForAllResources(Job * job, int start)
 	int searchStart = start;
 
 	for (pair<Resource*, int> r : job->getRequiredResources()) {
-		searchStart = max(searchStart, r.first->getFirstFreeSlot(searchStart, this->processingTime[job], r.second)->getStart());
+		searchStart = max(searchStart, r.first->getFirstFreeInstant(searchStart, this->processingTime[job], r.second));
 	}
 	if (searchStart > start) {
 		return this->getStartForAllResources(job, searchStart);
@@ -126,6 +126,16 @@ int Machine::getId()
 int Machine::getCost()
 {
 	return this->cost;
+}
+
+int Machine::getTime()
+{
+	return this->time;
+}
+
+int Machine::getJobProcessingTime(Job * job)
+{
+	return this->processingTime[job];
 }
 
 bool Machine::addJob(Job * job)
@@ -193,16 +203,13 @@ void Machine::shiftScheduledByDueDate()
 
 void Machine::randomJobSwap()
 {
-	this->storeCurrentScheduling();
-
 	int i = rand() % (this->scheduledJobs.size() - 1);
+	int j = rand() % (this->scheduledJobs.size() - 1);
+
+	if (i == j) return;
+
 	auto first = next(this->scheduledJobs.begin(), i);
-
-	if (first == this->scheduledJobs.end()) {
-		first = prev(first);
-	}
-
-	auto second = next(first);
+	auto second = next(this->scheduledJobs.begin(), j);
 
 	iter_swap(first, second);
 }
@@ -301,6 +308,7 @@ void Machine::improveTryAllSwap()
 void Machine::storeCurrentScheduling()
 {
 	this->previousScheduledJobs = this->scheduledJobs;
+	this->previousCost = this->cost;
 }
 
 bool Machine::swapRandomJobToMachine(Machine * machine)
@@ -359,4 +367,15 @@ void Machine::previousSchedule()
 	}
 	this->scheduledJobs = this->previousScheduledJobs;
 	this->previousScheduledJobs.clear();
+	this->cost = this->previousCost;
+}
+
+void Machine::bestScheduleForCurrentJobs()
+{
+	int cost;
+
+	do {
+		cost = this->cost;
+		this->improveTryAllSwap();
+	} while (this->cost < cost);
 }

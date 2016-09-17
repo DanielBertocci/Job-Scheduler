@@ -13,6 +13,7 @@ private:
 	int jobs;
 	int machines;
 	int resources;
+	string file;
 
 	// [job][machine]
 	int** processingTime;
@@ -58,6 +59,11 @@ public:
 	// Resources.
 	int getResourceQuantity(int resourceType);
 	int getResourceRequired(int jobId, int resourceType);
+
+	// Get/Set file name.
+	string getFile();
+	string getSolutionFile();
+	void setFile(string file);
 
 	// Parsing file.
 	static DataContainer* fromFile(string filename);

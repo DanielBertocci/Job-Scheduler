@@ -80,10 +80,26 @@ Machine* Solution::getMachineById(int id)
 int Solution::calcCost()
 {
 	int cost = 0;
+	/*for (Machine* machine : this->machines)
+	{
+		cost += machine->getCost();
+	}*/
 	for (Job* job : this->jobs)
 	{
 		cost += job->getCost();
 	}
+	this->cost = cost;
+	return cost;
+}
+
+int Solution::calcCostFromJobs()
+{
+	int cost = 0;
+	for (Job* job : this->jobs)
+	{
+		cost += job->getCost();
+	}
+	this->cost = cost;
 	return cost;
 }
 
@@ -102,6 +118,30 @@ void Solution::randomSchedule()
 			++i;
 			i %= this->machines.size();
 		} while (!this->machines[i]->addJob(job));
+	}
+}
+void Solution::smartRandomSchedule()
+{
+	sort(this->jobs.begin(), this->jobs.end(), Job::dueDateBefore);
+
+	Machine* best;
+	int processingTime;
+	int counter = 0;
+	for (Job* job : this->jobs) {
+		best = nullptr;
+		processingTime = INT_MAX;
+
+		for (Machine* m : this->machines) {
+			int tProcessingTime = m->getJobProcessingTime(job);
+
+			if (tProcessingTime <= 0) continue;
+			if (tProcessingTime < processingTime) {
+				processingTime = tProcessingTime;
+				best = m;
+			}
+		}
+		counter++;
+		best->addJob(job);
 	}
 }
 void Solution::dueDateBasedSchedule()
@@ -166,7 +206,7 @@ void Solution::printSchedule()
 		cout << "\n";
 	}
 }
-bool Solution::relaxMachines()
+bool Solution::relaxMachinesCosts()
 {
 	Machine* expensive = machines.front();
 	Machine* cheap = machines.front();
@@ -183,6 +223,30 @@ bool Solution::relaxMachines()
 	if (cheap == expensive) return false;
 
 	return expensive->sendFirstAvailableJobToMachine(cheap);
+}
+bool Solution::relaxMachinesTimes()
+{
+	Machine* expensive = machines.front();
+	Machine* cheap = machines.front();
+
+	for (Machine* m : this->machines) {
+		if (m->getTime() < cheap->getTime()) {
+			cheap = m;
+		}
+		if (m->getTime() > expensive->getTime()) {
+			expensive = m;
+		}
+	}
+
+	if (cheap == expensive) return false;
+
+	return expensive->sendFirstAvailableJobToMachine(cheap);
+}
+void Solution::randomJobSwapOnMachine()
+{
+	for (Machine* m : this->machines) {
+		m->randomJobSwap();
+	}
 }
 void Solution::randomJobSwapBetweenMachines()
 {
@@ -211,12 +275,18 @@ void Solution::print(ostream & out)
 }
 void Solution::swapJobsOnMachine()
 {
-	this->swapJobsOnMachine(4);
+	this->swapJobsOnMachine(1);
 }
 void Solution::partialShuffle()
 {
 	for (Machine* machine : this->machines) {
 		machine->partialShuffle();
+	}
+}
+void Solution::localSearch()
+{
+	for (Machine* m : this->machines) {
+		m->bestScheduleForCurrentJobs();
 	}
 }
 void Solution::tardinessFix()
@@ -275,17 +345,21 @@ void Solution::printResourceSchedulingGraph()
 	stringstream ss;
 	for (Resource* resource : this->resources)
 	{
-		for (ResourceInterval* i : resource->getUsage())
+		for (Instant* i : resource->getUsage())
 		{
+			if (i->getQuantity() < 0) {
+				continue;
+			}
+
 			ss << "[";
 			ss << "'Resource#" << resource->getId() << "',";
 			ss << "'','";
 			ss << "<div style = \"padding:5px;\">";
-			ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Quantity " << i->getQuantity() << "</h3><b>Start:</b> " << i->getStart() << "<br><b>End:</b> " << i->getEnd();
+			ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Quantity " << i->getQuantity() << "</h3><b>Start:</b> " << i->getTime() << "<br><b>End:</b> " << i->next()->getTime();
 			ss << "</div>";
 			ss << "',";
-			ss << "new Date(0,0,0,0," << i->getStart() << "),";
-			ss << "new Date(0,0,0,0," << i->getEnd() << "),";
+			ss << "new Date(0,0,0,0," << i->getTime() << "),";
+			ss << "new Date(0,0,0,0," << i->next()->getTime() << "),";
 			ss << "]," << endl;
 		}
 	}
@@ -320,10 +394,14 @@ void Solution::save()
 	for (Machine* machine : this->machines) {
 		machine->storeCurrentScheduling();
 	}
+	this->savedFlag = true;
 }
 
 void Solution::load()
 {
+	if (this->savedFlag == false) {
+		return;
+	}
 	for (Job* job : this->jobs)
 	{
 		job->setMachine(this->getMachineById(this->saved[job][0]));
@@ -332,4 +410,12 @@ void Solution::load()
 	for (Machine* machine : this->machines) {
 		machine->previousSchedule();
 	}
+}
+
+void Solution::store()
+{
+	string file = this->data->getSolutionFile();
+	ofstream out(file);
+	this->print(out);
+	out.close();
 }

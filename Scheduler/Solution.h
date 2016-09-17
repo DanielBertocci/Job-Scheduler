@@ -16,6 +16,7 @@ class Solution
 {
 private:
 	int cost;
+	bool savedFlag = false;
 	DataContainer* data;
 	vector<Job*> jobs;
 	vector<Machine*> machines;
@@ -28,18 +29,23 @@ public:
 
 	Machine* getMachineById(int id);
 	int calcCost();
+	int calcCostFromJobs();
 	void randomSchedule();
+	void smartRandomSchedule();
 	void dueDateBasedSchedule();
 	void readyDateBasedSchedule();
 	void resourceUsedBasedSchedule();
 	void schedule();
 	void reset();
 	void printSchedule();
-	bool relaxMachines();
+	bool relaxMachinesCosts();
+	bool relaxMachinesTimes();
+	void randomJobSwapOnMachine();
 	void randomJobSwapBetweenMachines();
 	void print(ostream& out);
 	void swapJobsOnMachine();
 	void partialShuffle();
+	void localSearch();
 	void tardinessFix();
 	void swapJobsOnMachine(int iterations);
 	void setupTest();
@@ -48,5 +54,6 @@ public:
 	void graph(string filePath, string jsData);
 	void save();
 	void load();
+	void store();
 };
 
