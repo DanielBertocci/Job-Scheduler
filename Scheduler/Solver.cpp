@@ -53,32 +53,8 @@ Solver::~Solver()
 
 int Solver::improve()
 {
-	this->solution->saveTemp();
-
 	this->solution->localSearch();
-
-	if (!this->accept(this->solution->getTempCost(), this->solution->calcCost())) {
-		this->solution->loadTemp();
-	}
-
-	this->solution->saveTemp();
-
-	for (int i = 0; i < 5; ++i) {
-		this->solution->randomJobSwapBetweenMachines();
-	}
-	this->solution->localSearch();
-
-	if (!this->accept(this->solution->getTempCost(), this->solution->calcCost())) {
-		this->solution->loadTemp();
-	}
-
-	this->solution->saveTemp();
-
-	this->solution->localSearchNoised();
-
-	if (!this->accept(this->solution->getTempCost(), this->solution->calcCost())) {
-		this->solution->loadTemp();
-	}
+	this->solution->relaxMachinesCosts();
 
 	return this->solution->calcCost();
 }

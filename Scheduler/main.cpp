@@ -48,14 +48,6 @@ int main(int argc, char **argv) {
 			solver->save();
 		}
 
-		if (newCost == cost) {
-			sameResult++;
-			if (sameResult > 5 && rand() % 4 == 0) {
-				sameResult = 0;
-				solver->disturb();
-			}
-		}
-
 		solver->updateDecay();
 
 		end = chrono::system_clock::now();
