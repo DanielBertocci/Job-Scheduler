@@ -23,6 +23,11 @@ multiset<Instant*, Instant::InstantComparator> Resource::getUsage()
 	return this->used;
 }
 
+void Resource::setUsage(multiset<Instant*, Instant::InstantComparator> usage)
+{
+	this->used = usage;
+}
+
 pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> Resource::use(int start, int time, int quantity)
 {
 	Instant* begin = new Instant(start, quantity);

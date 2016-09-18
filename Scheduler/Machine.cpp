@@ -6,7 +6,7 @@ void Machine::calcCostTo(list<Job*>::iterator iterator)
 	auto current = this->scheduledJobs.begin();
 	while (current != iterator) {
 		this->cost += (*current)->getCost();
-		++current;
+		current = next(current);
 	}
 }
 
@@ -138,6 +138,16 @@ int Machine::getJobProcessingTime(Job * job)
 	return this->processingTime[job];
 }
 
+list<Job*> Machine::getSchedule()
+{
+	return this->scheduledJobs;
+}
+
+void Machine::setSchedule(list<Job*> schedule)
+{
+	this->scheduledJobs = schedule;
+}
+
 bool Machine::addJob(Job * job)
 {
 	int processingTime = this->processingTime[job];
@@ -201,6 +211,15 @@ void Machine::shiftScheduledByDueDate()
 	}
 }
 
+void Machine::schedulingShuffle()
+{
+	for (auto it = this->scheduledJobs.begin(); it != this->scheduledJobs.end(); ++it) {
+		iter_swap(it, next(this->scheduledJobs.begin(), rand() % this->scheduledJobs.size()));
+	}
+
+	this->schedule();
+}
+
 void Machine::randomJobSwap()
 {
 	int i = rand() % (this->scheduledJobs.size() - 1);
@@ -246,11 +265,11 @@ void Machine::expansiveJobReschedule()
 	iter_swap(earlyJobIterator, exspansiveJobIterator);
 	this->schedule();
 
-	if (this->cost > cost) {
+	/*if (this->cost > cost) {
 		iter_swap(exspansiveJobIterator, earlyJobIterator);
 		this->scheduleFrom(earlyJobIterator);
 		return;
-	}
+	}*/
 
 	cost = this->cost;
 
@@ -321,9 +340,14 @@ bool Machine::swapRandomJobToMachine(Machine * machine)
 		return false;
 	}
 
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis1(0, schedulableOnOtherMachine.size()-1);
+	std::uniform_int_distribution<> dis2(0, schedulableOnThisMachine.size()-1);
+
 	// Job* iterators.
-	Job* j1 = *next(schedulableOnOtherMachine.begin(), rand() % schedulableOnOtherMachine.size());
-	Job* j2 = *next(schedulableOnThisMachine.begin(), rand() % schedulableOnThisMachine.size());
+	Job* j1 = *next(schedulableOnOtherMachine.begin(), dis1(gen));
+	Job* j2 = *next(schedulableOnThisMachine.begin(), dis2(gen));
 
 	// Schedule job.
 	this->addJob(j2);
@@ -348,7 +372,10 @@ bool Machine::sendFirstAvailableJobToMachine(Machine * machine)
 		return false;
 	}
 
-	Job* job = *next(schedulableOnOtherMachine.begin(), rand() % schedulableOnOtherMachine.size());
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(0, schedulableOnOtherMachine.size() - 1);
+	Job* job = *next(schedulableOnOtherMachine.begin(), dis(gen));
 
 	// Schedule on other machine.
 	machine->addJob(job);
@@ -366,7 +393,6 @@ void Machine::previousSchedule()
 		runtime_error("There is no previous scheduling");
 	}
 	this->scheduledJobs = this->previousScheduledJobs;
-	this->previousScheduledJobs.clear();
 	this->cost = this->previousCost;
 }
 

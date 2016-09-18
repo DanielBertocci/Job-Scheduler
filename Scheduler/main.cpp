@@ -38,13 +38,25 @@ int main(int argc, char **argv) {
 	// Search solutions.
 	int cost = INT_MAX;
 	int newCost;
+	int sameResult = 0;
 	while (elapsed_ms < time && cost > 0) {
 		newCost = solver->improve();
-		//newCost = solver->smartImprove();
+
 		if (newCost < cost) {
 			cost = newCost;
 			cout << "Current best: " << cost << endl;
+			solver->save();
 		}
+
+		if (newCost == cost) {
+			sameResult++;
+			if (sameResult > 5 && rand() % 4 == 0) {
+				sameResult = 0;
+				solver->disturb();
+			}
+		}
+
+		solver->updateDecay();
 
 		end = chrono::system_clock::now();
 		elapsed_ms = chrono::duration_cast<chrono::milliseconds>(end - start).count();
@@ -55,11 +67,10 @@ int main(int argc, char **argv) {
 	out << data->getFile() << ";" << elapsed_ms << " ms;" << cost << endl;
 	out.close();
 
-	cout << cost;
-
 	// Save 2 file with graph of solution and resource usage.
 	if (verbose == true) {
 		solver->storeSolutionGraphs();
 	}
+	cin >> cost;
 	return 0;
 }

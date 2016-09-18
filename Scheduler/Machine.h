@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <random>
 #include <unordered_map>
 #include <iostream>
 #include "Job.h"
@@ -39,6 +40,8 @@ public:
 	int getCost();
 	int getTime();
 	int getJobProcessingTime(Job* job);
+	list<Job*> getSchedule();
+	void setSchedule(list<Job*> schedule);
 	bool addJob(Job* job);
 	void schedule();
 	Job* getLastScheduledJob();
@@ -46,6 +49,7 @@ public:
 	void resetJobResources();
 	void reset();
 	void shiftScheduledByDueDate();
+	void schedulingShuffle();
 	void randomJobSwap();
 	void partialShuffle();
 	void expansiveJobReschedule();

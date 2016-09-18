@@ -19,6 +19,7 @@ public:
 
 	int getId() const;
 	multiset<Instant*, Instant::InstantComparator> getUsage();
+	void setUsage(multiset<Instant*, Instant::InstantComparator> usage);
 	pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> use(int start, int time, int quantity);
 	void free(multiset<Instant*>::iterator i);
 	int getFirstFreeInstant(int start, int time, int quantity);

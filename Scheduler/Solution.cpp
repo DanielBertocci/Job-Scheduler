@@ -77,6 +77,11 @@ Machine* Solution::getMachineById(int id)
 	return nullptr;
 }
 
+int Solution::jobCount()
+{
+	return this->jobs.size();
+}
+
 int Solution::calcCost()
 {
 	int cost = 0;
@@ -92,15 +97,8 @@ int Solution::calcCost()
 	return cost;
 }
 
-int Solution::calcCostFromJobs()
+void Solution::improveResources()
 {
-	int cost = 0;
-	for (Job* job : this->jobs)
-	{
-		cost += job->getCost();
-	}
-	this->cost = cost;
-	return cost;
 }
 
 void Solution::randomSchedule()
@@ -253,10 +251,10 @@ void Solution::randomJobSwapBetweenMachines()
 	random_shuffle(this->machines.begin(), this->machines.end());
 
 	auto current = this->machines.begin();
-	while (current != this->machines.end() - 1) {
-		(*current)->swapRandomJobToMachine(*(current + 1));
-		++current;
-	}
+
+	(*current)->swapRandomJobToMachine(*(current + 1));
+	(*current)->bestScheduleForCurrentJobs();
+	(*(current + 1))->bestScheduleForCurrentJobs();
 }
 void Solution::print(ostream & out)
 {
@@ -288,6 +286,18 @@ void Solution::localSearch()
 	for (Machine* m : this->machines) {
 		m->bestScheduleForCurrentJobs();
 	}
+}
+void Solution::localSearchNoised()
+{
+	int cost;
+	do {
+		for (Machine* m : this->machines) {
+			int cost = m->getCost();
+			m->schedulingShuffle();
+			m->bestScheduleForCurrentJobs();
+		}
+		cost = this->calcCost();
+	} while (cost < this->cost);
 }
 void Solution::tardinessFix()
 {
@@ -392,8 +402,12 @@ void Solution::save()
 		this->saved[job] = new int[3]{ job->getMachine()->getId(), job->getStart(), job->getEnd() };
 	}
 	for (Machine* machine : this->machines) {
-		machine->storeCurrentScheduling();
+		this->savedSchedule[machine] = machine->getSchedule();
 	}
+	for (Resource* resource : this->resources) {
+		this->savedResources[resource] = resource->getUsage();
+	}
+	this->savedCost = this->calcCost();
 	this->savedFlag = true;
 }
 
@@ -408,8 +422,41 @@ void Solution::load()
 		job->setSchedule(this->saved[job][1], this->saved[job][2] - this->saved[job][1]);
 	}
 	for (Machine* machine : this->machines) {
-		machine->previousSchedule();
+		machine->setSchedule(this->savedSchedule[machine]);
 	}
+	for (Resource* resource : this->resources) {
+		resource->setUsage(this->savedResources[resource]);
+	}
+}
+
+void Solution::saveTemp()
+{
+	int i = 0;
+	for (Job* job : this->jobs)
+	{
+		this->savedTemp[job] = new int[3]{ job->getMachine()->getId(), job->getStart(), job->getEnd() };
+	}
+	for (Machine* machine : this->machines) {
+		this->savedScheduleTemp[machine] = machine->getSchedule();
+	}
+	this->tempSavedCost = this->calcCost();
+}
+
+void Solution::loadTemp()
+{
+	for (Job* job : this->jobs)
+	{
+		job->setMachine(this->getMachineById(this->savedTemp[job][0]));
+		job->setSchedule(this->savedTemp[job][1], this->savedTemp[job][2] - this->savedTemp[job][1]);
+	}
+	for (Machine* machine : this->machines) {
+		machine->setSchedule(this->savedScheduleTemp[machine]);
+	}
+}
+
+int Solution::getTempCost()
+{
+	return this->tempSavedCost;
 }
 
 void Solution::store()
