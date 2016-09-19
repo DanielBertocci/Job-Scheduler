@@ -36,6 +36,7 @@ public:
 	int getDueDate() const;
 	int getResourceCount() const;
 	int getCost();
+	void shiftLeft(int amount);
 	unordered_map<Resource*, int> getRequiredResources() const;
 	Machine* getMachine();
 	void reset();

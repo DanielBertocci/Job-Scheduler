@@ -28,6 +28,8 @@ private:
 	unordered_map<Job*, int*> savedTemp;
 	unordered_map<Machine*, list<Job*>> savedScheduleTemp;
 	int tempSavedCost = INT_MAX;
+
+	void shiftJobsScheduleLeftFrom(vector<Job*>::iterator job, int amount);
 public:
 
 	Solution(DataContainer* data);
@@ -54,6 +56,7 @@ public:
 	void partialShuffle();
 	void localSearch();
 	void localSearchNoised();
+	void localSearchCompressionFix();
 	void tardinessFix();
 	void swapJobsOnMachine(int iterations);
 	void setupTest();

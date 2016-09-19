@@ -39,8 +39,8 @@ pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> Resource::use(i
 	multiset<Instant*>::iterator beginIterator = this->used.insert(begin);
 	multiset<Instant*>::iterator endIterator = this->used.insert(end);
 	int after = this->used.size();
-	
-	return pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator>(beginIterator,endIterator);
+
+	return pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator>(beginIterator, endIterator);
 }
 
 void Resource::free(multiset<Instant*>::iterator i)
@@ -56,8 +56,8 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 
 	int end = start + time;
 	int used = 0;
+	int usedInitial = 0;
 	int totalUsed = 0;
-	Instant* candidate = nullptr;
 
 	multiset<Instant*, Instant::InstantComparator> focusedInstants;
 
@@ -68,26 +68,27 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 			// It means there was reasoures used before "start" instant.
 			if (usedInstant->getQuantity() > 0 && usedInstant->next()->getTime() > start) {
 				// Here use only start instant.
+				focusedInstants.insert(usedInstant->next());
+
 				used += usedInstant->getQuantity();
+				usedInitial += used;
 				totalUsed = used;
 
-				if (this->quantity - used >= quantity) {
-					if(candidate == nullptr || usedInstant->next()->getTime() < candidate->getTime()) {
-						candidate = usedInstant->next();
-					}
+				if (this->quantity - totalUsed < quantity) {
+					break;
 				}
 			}
 		}
-		else if(usedInstant->getTime() < end){
+		else if (usedInstant->getTime() < end) {
+			if (usedInstant->getQuantity() > 0) {
+				focusedInstants.insert(usedInstant->next());
+			}
+
 			used += usedInstant->getQuantity();
 			totalUsed = max(totalUsed, used);
 
-			// Search smart begin for new search.
-			if (this->quantity - used >= quantity) {
-				candidate = usedInstant;
-			}
-			else {
-				candidate = usedInstant->next();
+			if (this->quantity - totalUsed < quantity) {
+				break;
 			}
 		}
 		else {
@@ -99,11 +100,16 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 		return start;
 	}
 
-	if (candidate != nullptr && candidate->getTime() > start) {
-		end = min(end, candidate->getTime());
+	int freedResources = 0;
+	for (Instant* candidate : focusedInstants) {
+		// All end instant, so use - to increment.
+		freedResources -= candidate->getQuantity();
+		if (this->quantity - usedInitial + freedResources >= quantity) {
+			return this->getFirstFreeInstant(end, time, quantity);
+		}
 	}
 
-	return this->getFirstFreeInstant(end, time, quantity);
+	return this->getFirstFreeInstant((*focusedInstants.rbegin())->getTime(), time, quantity);
 }
 
 pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> Resource::useFirstFreeSlot(int start, int time, int quantity)

@@ -2,6 +2,13 @@
 #include <Windows.h>
 #include "TemplateResource.h"
 
+void Solution::shiftJobsScheduleLeftFrom(vector<Job*>::iterator job, int amount)
+{
+	for (auto it = job; it != this->jobs.end(); ++it) {
+		(*it)->shiftLeft(amount);
+	}
+}
+
 Solution::Solution(DataContainer * data)
 {
 	this->data = data;
@@ -103,7 +110,7 @@ void Solution::improveResources()
 
 void Solution::randomSchedule()
 {
-	srand(time(0));
+	//srand(time(0));
 	random_shuffle(this->jobs.begin(), this->jobs.end());
 
 	this->reset();
@@ -300,6 +307,36 @@ void Solution::localSearchNoised()
 		}
 		cost = this->calcCost();
 	} while (cost < this->cost);
+}
+void Solution::localSearchCompressionFix()
+{
+	sort(this->jobs.begin(), this->jobs.end(), Job::startBefore);
+	Job* prevJob = this->jobs.front();
+	Job* currentLastJob = prevJob;
+	unordered_map<Machine*, Job*>lastMachineJob;
+	unordered_map<Machine*, Job*>lastMachineJobInternal;
+	int distance;
+	for (auto it = this->jobs.begin(); it != this->jobs.end(); ++it) {
+		Job* job = *it;
+		if (job->getId() == 17) {
+			int a = 0;
+		}
+		if (prevJob->getEnd() > currentLastJob->getEnd()) {
+			currentLastJob = prevJob;
+		}
+
+		lastMachineJob[prevJob->getMachine()] = prevJob;
+
+		distance = job->getStart() - currentLastJob->getEnd();
+		if (lastMachineJob[job->getMachine()]) {
+			distance = min(distance, job->getStart() - lastMachineJob[job->getMachine()]->getEnd() - job->getMachine()->getSetupTime(lastMachineJob[job->getMachine()], job));
+		}
+
+		if (distance > 0) {
+			job->shiftLeft(distance);
+		}
+		prevJob = job;
+	}
 }
 void Solution::tardinessFix()
 {

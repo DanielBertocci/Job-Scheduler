@@ -40,16 +40,10 @@ int main(int argc, char **argv) {
 	int newCost;
 	while (elapsed_ms < time && cost > 0) {
 		newCost = solver->improve();
-
 		if (newCost < cost) {
 			cost = newCost;
 			cout << "Current best: " << cost << endl;
 			solver->save();
-		}
-		if (newCost < 230000) {
-			solver->storeSolution();
-			solver->storeSolutionGraphs();
-			break;
 		}
 		solver->updateDecay();
 

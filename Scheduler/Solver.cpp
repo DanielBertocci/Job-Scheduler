@@ -69,6 +69,7 @@ int Solver::improve()
 	}
 	else if (randomCheck < (1 - log(this->solveBetterCounter / 500 + 1) / 10)) {
 		this->solution->localSearchNoised();
+		this->solution->localSearchCompressionFix();
 	}
 	else {
 		this->solveBetterCounter = 0;
@@ -77,18 +78,8 @@ int Solver::improve()
 		this->improve();
 	}
 
-	this->saveTempBetter();
-
-	this->solution->localSearch();
-	this->saveTempBetter();
-
-	this->solution->schedule();
-
-	if (this->accept(this->solution->getTempCost(), this->solution->calcCost())) {
-		this->solution->saveTemp();
-	}
-
 	this->solution->loadTemp();
+	
 	return this->solution->calcCost();
 }
 

@@ -93,6 +93,12 @@ int Job::getCost()
 	return max(0, this->end - this->dueDate)*this->penalty;
 }
 
+void Job::shiftLeft(int amount)
+{
+	this->start -= amount;
+	this->end -= amount;
+}
+
 string Job::toString()
 {
 	return "Job#" + to_string(this->id);

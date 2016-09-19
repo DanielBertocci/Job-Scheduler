@@ -41,6 +41,7 @@ public:
 	int getCost();
 	int getTime();
 	int getJobProcessingTime(Job* job);
+	int getSetupTime(Job* prev, Job* next);
 	list<Job*> getSchedule();
 	void setSchedule(list<Job*> schedule);
 	bool addJob(Job* job);

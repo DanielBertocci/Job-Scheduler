@@ -138,6 +138,11 @@ int Machine::getJobProcessingTime(Job * job)
 	return this->processingTime[job];
 }
 
+int Machine::getSetupTime(Job * prev, Job * next)
+{
+	return this->setupTime[prev][next];
+}
+
 list<Job*> Machine::getSchedule()
 {
 	return this->scheduledJobs;
