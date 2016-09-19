@@ -13,6 +13,7 @@ private:
 	int changeSolutionIfImprove(function<void()> algorithm);
 	double decay = 1;
 	double decayFactor = 0.99;
+	int solveBetterCounter = 0;
 	bool accept(int oldCost, int newCost);
 
 public:
@@ -29,5 +30,6 @@ public:
 	void storeSolutionGraphs();
 	int exploration();
 	int search();
+	void saveTempBetter();
 };
 

@@ -180,6 +180,7 @@ void Solution::resourceUsedBasedSchedule()
 }
 void Solution::schedule()
 {
+	random_shuffle(this->machines.begin(), this->machines.end());
 	for (Machine* machine : this->machines)
 	{
 		machine->schedule();
@@ -283,6 +284,7 @@ void Solution::partialShuffle()
 }
 void Solution::localSearch()
 {
+	random_shuffle(this->machines.begin(), this->machines.end());
 	for (Machine* m : this->machines) {
 		m->bestScheduleForCurrentJobs();
 	}
@@ -353,6 +355,7 @@ void Solution::printGraph()
 void Solution::printResourceSchedulingGraph()
 {
 	stringstream ss;
+	auto a = this->resources;
 	for (Resource* resource : this->resources)
 	{
 		for (Instant* i : resource->getUsage())
@@ -389,7 +392,7 @@ void Solution::graph(string filePath, string jsData)
 	}
 
 
-	ofstream out(filePath, std::ios::out | std::ios::binary);
+	ofstream out(filePath, ios::out | ios::binary);
 	out << graphTemplate;
 	out.close();
 }

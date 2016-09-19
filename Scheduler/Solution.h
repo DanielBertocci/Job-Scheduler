@@ -27,7 +27,7 @@ private:
 	int savedCost;
 	unordered_map<Job*, int*> savedTemp;
 	unordered_map<Machine*, list<Job*>> savedScheduleTemp;
-	int tempSavedCost;
+	int tempSavedCost = INT_MAX;
 public:
 
 	Solution(DataContainer* data);

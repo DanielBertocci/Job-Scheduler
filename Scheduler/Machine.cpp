@@ -213,8 +213,10 @@ void Machine::shiftScheduledByDueDate()
 
 void Machine::schedulingShuffle()
 {
+	int randomIndex;
 	for (auto it = this->scheduledJobs.begin(); it != this->scheduledJobs.end(); ++it) {
-		iter_swap(it, next(this->scheduledJobs.begin(), rand() % this->scheduledJobs.size()));
+		randomIndex = RandomGenerator::getInstance().randomInt(0, this->scheduledJobs.size() - 1);
+		iter_swap(it, next(this->scheduledJobs.begin(), randomIndex));
 	}
 
 	this->schedule();
@@ -222,8 +224,8 @@ void Machine::schedulingShuffle()
 
 void Machine::randomJobSwap()
 {
-	int i = rand() % (this->scheduledJobs.size() - 1);
-	int j = rand() % (this->scheduledJobs.size() - 1);
+	int i = RandomGenerator::getInstance().randomInt(0, this->scheduledJobs.size() - 1);
+	int j = RandomGenerator::getInstance().randomInt(0, this->scheduledJobs.size() - 1);
 
 	if (i == j) return;
 
@@ -340,26 +342,39 @@ bool Machine::swapRandomJobToMachine(Machine * machine)
 		return false;
 	}
 
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis1(0, schedulableOnOtherMachine.size()-1);
-	std::uniform_int_distribution<> dis2(0, schedulableOnThisMachine.size()-1);
+	int index1 = RandomGenerator::getInstance().randomInt(0, schedulableOnOtherMachine.size() - 1);
+	int index2 = RandomGenerator::getInstance().randomInt(0, schedulableOnThisMachine.size() - 1);
 
 	// Job* iterators.
-	Job* j1 = *next(schedulableOnOtherMachine.begin(), dis1(gen));
-	Job* j2 = *next(schedulableOnThisMachine.begin(), dis2(gen));
+	Job* j1 = *next(schedulableOnOtherMachine.begin(), index1);
+	Job* j2 = *next(schedulableOnThisMachine.begin(), index2);
 
 	// Schedule job.
 	this->addJob(j2);
 	machine->addJob(j1);
 
 	// Remove from schedule vector.
-	this->scheduledJobs.remove(j1);
-	machine->scheduledJobs.remove(j2);
+	auto fromThis = find(this->scheduledJobs.begin(), this->scheduledJobs.end(), j1);
+	if (fromThis != this->scheduledJobs.begin()) {
+		fromThis = prev(fromThis);
+		this->scheduledJobs.remove(j1);
+		this->scheduleFrom(fromThis);
+	}
+	else {
+		this->scheduledJobs.remove(j1);
+		this->schedule();
+	}
 
-	// Schedule new job.
-	this->schedule();
-	machine->schedule();
+	auto fromOther = find(machine->scheduledJobs.begin(), machine->scheduledJobs.end(), j2);
+	if (fromOther != machine->scheduledJobs.begin()) {
+		fromOther = prev(fromOther);
+		machine->scheduledJobs.remove(j2);
+		machine->scheduleFrom(fromOther);
+	}
+	else {
+		machine->scheduledJobs.remove(j2);
+		machine->schedule();
+	}
 
 	return true;
 }
@@ -372,10 +387,8 @@ bool Machine::sendFirstAvailableJobToMachine(Machine * machine)
 		return false;
 	}
 
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(0, schedulableOnOtherMachine.size() - 1);
-	Job* job = *next(schedulableOnOtherMachine.begin(), dis(gen));
+	int randomIndex = RandomGenerator::getInstance().randomInt(0, schedulableOnOtherMachine.size() - 1);
+	Job* job = *next(schedulableOnOtherMachine.begin(), randomIndex);
 
 	// Schedule on other machine.
 	machine->addJob(job);

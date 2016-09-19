@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <iostream>
 #include "Job.h"
+#include "RandomGenerator.h"
 
 using namespace std;
 

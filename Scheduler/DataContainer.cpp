@@ -139,8 +139,8 @@ void DataContainer::parseResourceQuantity(istream & in)
 
 	//Parse.
 	while (getRow(in, row)) {
-		resourceId = std::stoi(row[0]);
-		quantity = std::stoi(row[1]);
+		resourceId = stoi(row[0]);
+		quantity = stoi(row[1]);
 		this->resourceQuantity[resourceId] = quantity;
 	}
 }
@@ -155,9 +155,9 @@ void DataContainer::parseResourceRequired(istream & in)
 
 	// Parse.
 	while (getRow(in, row)) {
-		jobId = std::stoi(row[0]);
-		resourceId = std::stoi(row[1]);
-		rRequired = std::stoi(row[2]);
+		jobId = stoi(row[0]);
+		resourceId = stoi(row[1]);
+		rRequired = stoi(row[2]);
 
 		this->resourceRequired[jobId - 1][resourceId] = rRequired;
 	}
@@ -249,7 +249,7 @@ string DataContainer::getFile()
 {
 	string file;
 	const size_t last_slash_idx = this->file.find_last_of("\\/");
-	if (std::string::npos != last_slash_idx)
+	if (string::npos != last_slash_idx)
 		file = this->file.substr(last_slash_idx + 1);
 	return file;
 }
@@ -258,7 +258,7 @@ string DataContainer::getSolutionFile()
 {
 	string file = this->file;
 	const size_t last_slash_idx = file.find_last_of("\\/");
-	if (std::string::npos != last_slash_idx)
+	if (string::npos != last_slash_idx)
 		file = file.substr(last_slash_idx + 1);
 	return file.substr(0, file.size() - 4) + "_sol.csv";
 }

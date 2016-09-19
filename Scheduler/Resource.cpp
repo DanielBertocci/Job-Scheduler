@@ -59,14 +59,23 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 	int totalUsed = 0;
 	Instant* candidate = nullptr;
 
+	multiset<Instant*, Instant::InstantComparator> focusedInstants;
+
 	for (Instant* usedInstant : this->used)
 	{
 		if (usedInstant->getTime() <= start) {
 			// Get initial count. Can contribute only positive instant with time greater than start.
 			// It means there was reasoures used before "start" instant.
 			if (usedInstant->getQuantity() > 0 && usedInstant->next()->getTime() > start) {
+				// Here use only start instant.
 				used += usedInstant->getQuantity();
 				totalUsed = used;
+
+				if (this->quantity - used >= quantity) {
+					if(candidate == nullptr || usedInstant->next()->getTime() < candidate->getTime()) {
+						candidate = usedInstant->next();
+					}
+				}
 			}
 		}
 		else if(usedInstant->getTime() < end){
