@@ -48,7 +48,6 @@ public:
 	int getJobProcessingTime(Job* job);
 	int getSetupTime(Job* prev, Job* next);
 	JobList getSchedule();
-	Job* getLastScheduledJob();
 
 	// Setters.
 	void setSchedule(JobList schedule);
