@@ -69,6 +69,5 @@ public:
 	void randomJobSwap();
 	void schedule();
 	void schedulingShuffle();
-	void storeCurrentScheduling();
 };
 

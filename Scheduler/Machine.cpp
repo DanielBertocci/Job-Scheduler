@@ -250,11 +250,6 @@ void Machine::improveTryAllSwap()
 	this->scheduleFrom(prev(this->scheduledJobs.end()));
 }
 
-void Machine::storeCurrentScheduling()
-{
-	this->previousScheduledJobs = this->scheduledJobs;
-	this->previousCost = this->cost;
-}
 
 bool Machine::swapRandomJobToMachine(Machine * machine)
 {
