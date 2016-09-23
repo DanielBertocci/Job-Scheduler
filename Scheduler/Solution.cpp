@@ -237,10 +237,6 @@ void Solution::print(ostream & out)
 		out << job->getStart() << ";" << job->getEnd() << endl;
 	}
 }
-void Solution::swapJobsOnMachine()
-{
-	this->swapJobsOnMachine(1);
-}
 
 void Solution::localSearch()
 {
@@ -290,16 +286,6 @@ void Solution::localSearchCompressionFix()
 			job->shiftLeft(distance);
 		}
 		prevJob = job;
-	}
-}
-
-void Solution::swapJobsOnMachine(int iterations)
-{
-	random_shuffle(this->machines.begin(), this->machines.end());
-	for (int i = 0; i < iterations; ++i) {
-		for (Machine* machine : this->machines) {
-			machine->improveTryAllSwap();
-		}
 	}
 }
 

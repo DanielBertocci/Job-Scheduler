@@ -78,7 +78,5 @@ public:
 	void randomSchedule();
 	void schedule();
 	void smartRandomSchedule();
-	void swapJobsOnMachine();
-	void swapJobsOnMachine(int iterations);
 };
 
