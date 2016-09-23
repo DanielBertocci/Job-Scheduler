@@ -42,6 +42,7 @@ public:
 	int getDueDate() const;
 	int getEnd();
 	int getId() const;
+	int getPenalty() const;
 	int getReadyDate() const;
 	int getResourceCount() const;
 	int getStart();

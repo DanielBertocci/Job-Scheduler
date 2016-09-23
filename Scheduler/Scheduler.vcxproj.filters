@@ -33,22 +33,19 @@
     <ClInclude Include="DataContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TemplateResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Solver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Instant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RandomGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TemplateResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,9 +80,6 @@
     <ClCompile Include="RandomGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\Desktop\resources.html" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Scheduler1.rc">

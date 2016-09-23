@@ -314,7 +314,7 @@ void Solution::printGraph()
 		ss << "'Machine " << job->getMachine()->getId() << "',";
 		ss << "'','";
 		ss << "<div style = \"padding:5px;\">";
-		ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Job " << job->getId() << "</h3><b>Cost:</b> " << job->getCost() << "<br><b>Start:</b> " << job->getStart() << "<br><b>End:</b> " << job->getEnd() << "<br><b>Due Date:</b> " << job->getDueDate() << "<br><b>Ready Date:</b> " << job->getReadyDate();
+		ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Job " << job->getId() << "</h3><b>Cost:</b> " << job->getCost() << "<br><b>Start:</b> " << job->getStart() << "<br><b>End:</b> " << job->getEnd() << "<br><b>Due Date:</b> " << job->getDueDate() << "<br><b>Ready Date:</b> " << job->getReadyDate() << "<br><b>Penalty:</b> " << job->getPenalty();
 		ss << "</div>";
 		ss << "',";
 		ss << "new Date(0,0,0,0," << job->getStart() << "),";

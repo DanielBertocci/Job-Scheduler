@@ -155,11 +155,10 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="RandomGenerator.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="resource1.h" />
     <ClInclude Include="Solver.h" />
-    <ClInclude Include="TemplateResource.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Solution.h" />
+    <ClInclude Include="TemplateResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataContainer.cpp" />
@@ -172,9 +171,6 @@
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Solution.cpp" />
     <ClCompile Include="Solver.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\Desktop\resources.html" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Scheduler1.rc" />

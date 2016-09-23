@@ -16,6 +16,11 @@ int Job::getId() const
 	return this->id;
 }
 
+int Job::getPenalty() const
+{
+	return this->penalty;
+}
+
 int Job::getStart()
 {
 	return this->start;
