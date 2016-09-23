@@ -169,14 +169,6 @@ void Machine::schedule()
 	this->scheduleFrom(this->scheduledJobs.begin());
 }
 
-Job * Machine::getLastScheduledJob()
-{
-	if (this->scheduledJobs.size() <= 0) {
-		return nullptr;
-	}
-
-	return this->scheduledJobs.back();
-}
 
 void Machine::printSchedule()
 {
