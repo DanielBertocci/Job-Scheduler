@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <unordered_map>
 #include "Machine.h"
 #include "Resource.h"
