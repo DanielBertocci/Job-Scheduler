@@ -161,15 +161,7 @@ void Solution::reset()
 		resource->release();
 	}
 }
-void Solution::printSchedule()
-{
-	for (Machine* machine : this->machines)
-	{
-		cout << "Machine" << machine->getId() << ":";
-		machine->printSchedule();
-		cout << "\n";
-	}
-}
+
 bool Solution::relaxMachinesCosts()
 {
 	Machine* expensive = machines.front();

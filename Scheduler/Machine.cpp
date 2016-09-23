@@ -169,16 +169,6 @@ void Machine::schedule()
 	this->scheduleFrom(this->scheduledJobs.begin());
 }
 
-
-void Machine::printSchedule()
-{
-	for (Job* job : this->scheduledJobs)
-	{
-		cout << job->toString() << " ";
-	}
-	cout << endl;
-}
-
 void Machine::resetJobResources()
 {
 	this->resetJobResourcesFrom(this->scheduledJobs.begin());

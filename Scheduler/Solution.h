@@ -60,7 +60,6 @@ public:
 	void print(ostream& out);
 	void printGraph();
 	void printResourceSchedulingGraph();
-	void printSchedule();
 	void store();
 
 	// Algorithms

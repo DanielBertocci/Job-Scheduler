@@ -63,7 +63,6 @@ public:
 	void bestScheduleForCurrentJobs();
 	void improveTryAllSwap();
 	void previousSchedule();
-	void printSchedule();
 	void randomJobSwap();
 	void schedule();
 	void schedulingShuffle();
