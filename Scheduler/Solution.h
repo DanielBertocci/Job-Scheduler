@@ -12,62 +12,73 @@
 
 using namespace std;
 
+typedef vector<Job*> JobVector;
+typedef vector<Job*>::iterator JobVectorIterator;
+typedef vector<Machine*> MachineVector;
+typedef vector<Resource*> ResourceVector;
+typedef unordered_map<Job*, int*> JobIdStartEndMap;
+typedef unordered_map<Machine*, JobList> MachineScheduleMap;
+typedef unordered_map<Resource*, InstantSet> ResourceInstantSetMap;
+
 class Solution
 {
 private:
-	int cost;
 	bool savedFlag = false;
 	DataContainer* data;
-	vector<Job*> jobs;
-	vector<Machine*> machines;
-	vector<Resource*> resources;
-	unordered_map<Job*, int*> saved;
-	unordered_map<Machine*, list<Job*>> savedSchedule;
-	unordered_map<Resource*, multiset<Instant*, Instant::InstantComparator>> savedResources;
+	double localSearchFactor = 0.5;
+	int cost;
 	int savedCost;
-	unordered_map<Job*, int*> savedTemp;
-	unordered_map<Machine*, list<Job*>> savedScheduleTemp;
 	int tempSavedCost = INT_MAX;
+	JobIdStartEndMap saved;
+	JobIdStartEndMap savedTemp;
+	JobVector jobs;
+	MachineScheduleMap savedSchedule;
+	MachineScheduleMap savedScheduleTemp;
+	MachineVector machines;
+	ResourceInstantSetMap savedResources;
+	ResourceVector resources;
 
-	void shiftJobsScheduleLeftFrom(vector<Job*>::iterator job, int amount);
 public:
 
 	Solution(DataContainer* data);
 	~Solution();
 
+	// Getters.
+	int getJobCount();
+	int getTempCost();
 	Machine* getMachineById(int id);
-	int jobCount();
-	int calcCost();
-	void improveResources();
-	void randomSchedule();
-	void smartRandomSchedule();
-	void dueDateBasedSchedule();
-	void readyDateBasedSchedule();
-	void resourceUsedBasedSchedule();
-	void schedule();
+
+	// Resets.
 	void reset();
-	void printSchedule();
-	bool relaxMachinesCosts();
-	bool relaxMachinesTimes();
-	void randomJobSwapOnMachine();
-	void randomJobSwapBetweenMachines();
+
+	// Save & Load.
+	void load();
+	void loadTemp();
+	void save();
+	void saveTemp();
+
+	// Print & store.
+	void graph(string filePath, string jsData);
 	void print(ostream& out);
-	void swapJobsOnMachine();
-	void partialShuffle();
-	void localSearch();
-	void localSearchNoised();
-	void localSearchCompressionFix();
-	void tardinessFix();
-	void swapJobsOnMachine(int iterations);
-	void setupTest();
 	void printGraph();
 	void printResourceSchedulingGraph();
-	void graph(string filePath, string jsData);
-	void save();
-	void load();
-	void saveTemp();
-	void loadTemp();
-	int getTempCost();
+	void printSchedule();
 	void store();
+
+	// Algorithms
+	bool relaxMachinesCosts();
+	bool relaxMachinesTimes();
+	int calcCost();
+	void improveResources();
+	void localSearch();
+	void localSearchCompressionFix();
+	void localSearchNoised();
+	void randomJobSwapBetweenMachines();
+	void randomJobSwapOnMachine();
+	void randomSchedule();
+	void schedule();
+	void smartRandomSchedule();
+	void swapJobsOnMachine();
+	void swapJobsOnMachine(int iterations);
 };
 

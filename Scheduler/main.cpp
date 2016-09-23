@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 		if (newCost < cost) {
 			cost = newCost;
 			cout << "Current best: " << cost << endl;
-			solver->save();
+			//solver->save();
 		}
 		solver->updateDecay();
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 		elapsed_ms = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 	}
 
-	solver->storeSolution();
+	int finalCost = solver->storeSolution();
 
 	ofstream out("output.csv", ofstream::out | ofstream::app);
 	out << data->getFile() << ";" << elapsed_ms << " ms;" << cost << endl;
@@ -61,5 +61,6 @@ int main(int argc, char **argv) {
 	if (verbose == true) {
 		solver->storeSolutionGraphs();
 	}
+	cout << elapsed_ms << " " << finalCost;
 	return 0;
 }

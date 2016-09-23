@@ -2,13 +2,6 @@
 #include <Windows.h>
 #include "TemplateResource.h"
 
-void Solution::shiftJobsScheduleLeftFrom(vector<Job*>::iterator job, int amount)
-{
-	for (auto it = job; it != this->jobs.end(); ++it) {
-		(*it)->shiftLeft(amount);
-	}
-}
-
 Solution::Solution(DataContainer * data)
 {
 	this->data = data;
@@ -84,7 +77,7 @@ Machine* Solution::getMachineById(int id)
 	return nullptr;
 }
 
-int Solution::jobCount()
+int Solution::getJobCount()
 {
 	return this->jobs.size();
 }
@@ -149,42 +142,7 @@ void Solution::smartRandomSchedule()
 		best->addJob(job);
 	}
 }
-void Solution::dueDateBasedSchedule()
-{
-	sort(this->jobs.begin(), this->jobs.end(), Job::dueDateBefore);
-	int i = 0;
-	for (Job* job : this->jobs)
-	{
-		do {
-			++i;
-			i %= this->machines.size();
-		} while (!this->machines[i]->addJob(job));
-	}
-}
-void Solution::readyDateBasedSchedule()
-{
-	sort(this->jobs.begin(), this->jobs.end(), Job::readyDateBefore);
-	int i = 0;
-	for (Job* job : this->jobs)
-	{
-		do {
-			++i;
-			i %= this->machines.size();
-		} while (!this->machines[i]->addJob(job));
-	}
-}
-void Solution::resourceUsedBasedSchedule()
-{
-	sort(this->jobs.begin(), this->jobs.end(), Job::moreUsedResourceBefore);
-	int i = 0;
-	for (Job* job : this->jobs)
-	{
-		do {
-			++i;
-			i %= this->machines.size();
-		} while (!this->machines[i]->addJob(job));
-	}
-}
+
 void Solution::schedule()
 {
 	random_shuffle(this->machines.begin(), this->machines.end());
@@ -283,12 +241,7 @@ void Solution::swapJobsOnMachine()
 {
 	this->swapJobsOnMachine(1);
 }
-void Solution::partialShuffle()
-{
-	for (Machine* machine : this->machines) {
-		machine->partialShuffle();
-	}
-}
+
 void Solution::localSearch()
 {
 	random_shuffle(this->machines.begin(), this->machines.end());
@@ -296,6 +249,7 @@ void Solution::localSearch()
 		m->bestScheduleForCurrentJobs();
 	}
 }
+
 void Solution::localSearchNoised()
 {
 	int cost;
@@ -314,13 +268,9 @@ void Solution::localSearchCompressionFix()
 	Job* prevJob = this->jobs.front();
 	Job* currentLastJob = prevJob;
 	unordered_map<Machine*, Job*>lastMachineJob;
-	unordered_map<Machine*, Job*>lastMachineJobInternal;
 	int distance;
 	for (auto it = this->jobs.begin(); it != this->jobs.end(); ++it) {
 		Job* job = *it;
-		if (job->getId() == 17) {
-			int a = 0;
-		}
 		if (prevJob->getEnd() > currentLastJob->getEnd()) {
 			currentLastJob = prevJob;
 		}
@@ -332,38 +282,23 @@ void Solution::localSearchCompressionFix()
 			distance = min(distance, job->getStart() - lastMachineJob[job->getMachine()]->getEnd() - job->getMachine()->getSetupTime(lastMachineJob[job->getMachine()], job));
 		}
 
+		if (job->getStart() - distance < job->getReadyDate()) {
+			distance = job->getStart() - job->getReadyDate();
+		}
+
 		if (distance > 0) {
 			job->shiftLeft(distance);
 		}
 		prevJob = job;
 	}
 }
-void Solution::tardinessFix()
-{
-	random_shuffle(this->machines.begin(), this->machines.end());
-	for (Machine* m : this->machines) {
-		m->expansiveJobReschedule();
-	}
-}
+
 void Solution::swapJobsOnMachine(int iterations)
 {
 	random_shuffle(this->machines.begin(), this->machines.end());
 	for (int i = 0; i < iterations; ++i) {
 		for (Machine* machine : this->machines) {
 			machine->improveTryAllSwap();
-		}
-	}
-}
-
-void Solution::setupTest()
-{
-	for (Machine* machine : this->machines) {
-		int cost = machine->getCost();
-		machine->improveSetup();
-		machine->schedule();
-		int newcost = machine->getCost();
-		if (newcost > cost) {
-			machine->previousSchedule();
 		}
 	}
 }
@@ -499,9 +434,32 @@ int Solution::getTempCost()
 	return this->tempSavedCost;
 }
 
+bool getRowUtil(istream &input, vector<string> &row) {
+	string line, temp;
+
+	if (!getline(input, line) || line == "" || line == "\r") return false;
+	stringstream str(line);
+
+	row.clear();
+	while (getline(str, temp, ';'))
+		row.push_back(temp);
+
+	return true;
+}
+
 void Solution::store()
 {
 	string file = this->data->getSolutionFile();
+
+	ifstream f(file);
+	if (f.good()) {
+		vector<string>line;
+		getRowUtil(f, line);
+		if (atoi(line[1].c_str()) <= this->calcCost()) {
+			return;
+		}
+	}
+
 	ofstream out(file);
 	this->print(out);
 	out.close();

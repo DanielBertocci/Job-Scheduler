@@ -244,3 +244,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /Scheduler/I_30_2_02_02_2_sol.csv
+*.csv

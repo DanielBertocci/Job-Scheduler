@@ -1,6 +1,6 @@
 #include "Job.h"
 
-Job::Job(int id, int dueDate, int readyDate, int penalty, unordered_map<Resource*, int> resources)
+Job::Job(int id, int dueDate, int readyDate, int penalty, ResourceQuantityMap resources)
 {
 	this->id = id;
 	this->dueDate = dueDate;
@@ -9,9 +9,7 @@ Job::Job(int id, int dueDate, int readyDate, int penalty, unordered_map<Resource
 	this->resources = resources;
 }
 
-Job::~Job()
-{
-}
+Job::~Job() {}
 
 int Job::getId() const
 {
@@ -47,7 +45,7 @@ int Job::getResourceCount() const
 	return counter;
 }
 
-unordered_map<Resource*, int> Job::getRequiredResources() const
+ResourceQuantityMap Job::getRequiredResources() const
 {
 	return this->resources;
 }
@@ -67,13 +65,18 @@ void Job::reset()
 
 void Job::resetInstants()
 {
-	for (pair<Resource*, pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator>> pair : this->instants)
+	for (pair<Resource*, InstantIteratorSetPair> pair : this->instants)
 	{
+		// Remove Instants from memory.
+		delete (*pair.second.first);
+		delete (*pair.second.second);
+
+		// Remove Instants from using storage.
 		pair.first->free(pair.second.first);
 		pair.first->free(pair.second.second);
-		/*delete *pair.second.first;
-		delete *pair.second.second;*/
 	}
+
+	// Remove Instants from this job.
 	this->instants.clear();
 }
 
@@ -97,6 +100,12 @@ void Job::shiftLeft(int amount)
 {
 	this->start -= amount;
 	this->end -= amount;
+
+	// Shift instants.
+	for (auto pair : this->instants) {
+		(*pair.second.first)->shiftLeft(amount);
+		(*pair.second.second)->shiftLeft(amount);
+	}
 }
 
 string Job::toString()
@@ -104,7 +113,7 @@ string Job::toString()
 	return "Job#" + to_string(this->id);
 }
 
-void Job::addInstant(Resource * resource, pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> interval)
+void Job::setInstants(Resource * resource, InstantIteratorSetPair interval)
 {
 	this->instants[resource] = interval;
 }

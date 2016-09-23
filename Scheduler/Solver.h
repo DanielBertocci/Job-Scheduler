@@ -1,8 +1,6 @@
 #pragma once
 #include "DataContainer.h"
 #include "Solution.h"
-#include <functional>
-#include <random>
 
 using namespace std;
 
@@ -10,7 +8,6 @@ class Solver
 {
 private:
 	Solution* solution;
-	int changeSolutionIfImprove(function<void()> algorithm);
 	double decay = 1;
 	double decayFactor = 0.99;
 	int solveBetterCounter = 0;
@@ -21,15 +18,10 @@ public:
 	~Solver();
 
 	int improve();
-	void updateDecay();
-	int smartImprove();
-	int testSolver();
+	int storeSolution();
 	void save();
-	void disturb();
-	void storeSolution();
-	void storeSolutionGraphs();
-	int exploration();
-	int search();
 	void saveTempBetter();
+	void storeSolutionGraphs();
+	void updateDecay();
 };
 

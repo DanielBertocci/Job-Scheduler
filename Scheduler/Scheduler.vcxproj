@@ -158,7 +158,6 @@
     <ClInclude Include="resource1.h" />
     <ClInclude Include="Solver.h" />
     <ClInclude Include="TemplateResource.h" />
-    <ClInclude Include="ResourceInterval.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Solution.h" />
   </ItemGroup>
@@ -170,7 +169,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RandomGenerator.cpp" />
     <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="ResourceInterval.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Solution.cpp" />
     <ClCompile Include="Solver.cpp" />

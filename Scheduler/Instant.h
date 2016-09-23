@@ -5,6 +5,7 @@ using namespace std;
 
 class Instant
 {
+
 private:
 	int time;
 	int quantity;
@@ -24,6 +25,7 @@ public:
 
 	int getTime() const;
 	int getQuantity() const;
+	void shiftLeft(int amount);
 	/*Job* getJob() const;
 	void setJob(Job* next);*/
 

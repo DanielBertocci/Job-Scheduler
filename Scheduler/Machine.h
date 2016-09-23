@@ -11,6 +11,11 @@ using namespace std;
 
 class Job;
 
+typedef unordered_map<Job*, int> JobProcessingTimeMap;
+typedef unordered_map<Job*, unordered_map<Job*, int>> JobSetupTimeMap;
+typedef list<Job*> JobList;
+typedef list<Job*>::iterator JobListIterator;
+
 class Machine
 {
 private:
@@ -19,48 +24,51 @@ private:
 	int cost = 0;
 	int previousCost;
 	bool scheduled = false;
-	unordered_map<Job*,int> processingTime;
-	unordered_map<Job*, unordered_map<Job*, int>> setupTime;
-	list<Job*> previousScheduledJobs;
-	list<Job*> scheduledJobs;
-	void calcCostTo(list<Job*>::iterator iterator);
-	void scheduleFrom(list<Job*>::iterator iterator);
-	void resetJobResourcesFrom(list<Job*>::iterator iterator);
+	JobProcessingTimeMap processingTime;
+	JobSetupTimeMap setupTime;
+	JobList previousScheduledJobs;
+	JobList scheduledJobs;
+	void calcCostTo(JobListIterator iterator);
+	void scheduleFrom(JobListIterator iterator);
+	void resetJobResourcesFrom(JobListIterator iterator);
 	list<Job*> getJobSchedulableOnMachine(Machine* machine);
 	int getStartForAllResources(Job* job, int start);
 
 public:
 	Machine(
 		int id,
-		unordered_map<Job*, int> processingTime,
-		unordered_map<Job*, unordered_map<Job*, int>> setupTime
+		JobProcessingTimeMap processingTime,
+		JobSetupTimeMap setupTime
 	);
 	~Machine();
 
+	// Getters.
 	int getId();
 	int getCost();
 	int getTime();
 	int getJobProcessingTime(Job* job);
 	int getSetupTime(Job* prev, Job* next);
-	list<Job*> getSchedule();
-	void setSchedule(list<Job*> schedule);
-	bool addJob(Job* job);
-	void schedule();
+	JobList getSchedule();
 	Job* getLastScheduledJob();
-	void printSchedule();
-	void resetJobResources();
+
+	// Setters.
+	void setSchedule(JobList schedule);
+
+	// Resets.
 	void reset();
-	void shiftScheduledByDueDate();
-	void schedulingShuffle();
-	void randomJobSwap();
-	void partialShuffle();
-	void expansiveJobReschedule();
-	void improveSetup();
-	void improveTryAllSwap();
-	void storeCurrentScheduling();
-	bool swapRandomJobToMachine(Machine* machine);
+	void resetJobResources();
+
+	// Utils.
+	bool addJob(Job* job);
 	bool sendFirstAvailableJobToMachine(Machine* machine);
-	void previousSchedule();
+	bool swapRandomJobToMachine(Machine* machine);
 	void bestScheduleForCurrentJobs();
+	void improveTryAllSwap();
+	void previousSchedule();
+	void printSchedule();
+	void randomJobSwap();
+	void schedule();
+	void schedulingShuffle();
+	void storeCurrentScheduling();
 };
 

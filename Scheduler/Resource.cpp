@@ -18,17 +18,17 @@ int Resource::getId() const
 	return this->id;
 }
 
-multiset<Instant*, Instant::InstantComparator> Resource::getUsage()
+InstantSet Resource::getUsage()
 {
 	return this->used;
 }
 
-void Resource::setUsage(multiset<Instant*, Instant::InstantComparator> usage)
+void Resource::setUsage(InstantSet usage)
 {
 	this->used = usage;
 }
 
-pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> Resource::use(int start, int time, int quantity)
+InstantSetIteratorPair Resource::use(int start, int time, int quantity)
 {
 	Instant* begin = new Instant(start, quantity);
 	Instant* end = new Instant(start + time, -quantity);
@@ -36,14 +36,14 @@ pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> Resource::use(i
 	end->next(begin);
 
 	int before = this->used.size();
-	multiset<Instant*>::iterator beginIterator = this->used.insert(begin);
-	multiset<Instant*>::iterator endIterator = this->used.insert(end);
+	InstantSetIterator beginIterator = this->used.insert(begin);
+	InstantSetIterator endIterator = this->used.insert(end);
 	int after = this->used.size();
 
-	return pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator>(beginIterator, endIterator);
+	return InstantSetIteratorPair(beginIterator, endIterator);
 }
 
-void Resource::free(multiset<Instant*>::iterator i)
+void Resource::free(InstantSetIterator i)
 {
 	this->used.erase(i);
 }
@@ -59,7 +59,7 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 	int usedInitial = 0;
 	int totalUsed = 0;
 
-	multiset<Instant*, Instant::InstantComparator> focusedInstants;
+	InstantSet focusedInstants;
 
 	for (Instant* usedInstant : this->used)
 	{
@@ -112,7 +112,7 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 	return this->getFirstFreeInstant((*focusedInstants.rbegin())->getTime(), time, quantity);
 }
 
-pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> Resource::useFirstFreeSlot(int start, int time, int quantity)
+InstantSetIteratorPair Resource::useFirstFreeSlot(int start, int time, int quantity)
 {
 	start = this->getFirstFreeInstant(start, time, quantity);
 	Instant* begin = new Instant(start, quantity);
@@ -120,10 +120,10 @@ pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> Resource::useFi
 	begin->next(end);
 	end->next(begin);
 	int before = this->used.size();
-	multiset<Instant*>::iterator beginIterator = this->used.insert(begin);
-	multiset<Instant*>::iterator endIterator = this->used.insert(end);
+	InstantSetIterator beginIterator = this->used.insert(begin);
+	InstantSetIterator endIterator = this->used.insert(end);
 
-	return pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator>(beginIterator, endIterator);
+	return InstantSetIteratorPair(beginIterator, endIterator);
 }
 
 void Resource::release()

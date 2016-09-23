@@ -1,6 +1,81 @@
 #include "Machine.h"
+Machine::Machine(int id, JobProcessingTimeMap processingTime, JobSetupTimeMap setupTime)
+{
+	this->id = id;
+	this->processingTime = processingTime;
+	this->setupTime = setupTime;
+}
 
-void Machine::calcCostTo(list<Job*>::iterator iterator)
+Machine::~Machine()
+{
+}
+
+int Machine::getId()
+{
+	return this->id;
+}
+
+int Machine::getCost()
+{
+	return this->cost;
+}
+
+int Machine::getTime()
+{
+	return this->time;
+}
+
+int Machine::getSetupTime(Job * prev, Job * next)
+{
+	return this->setupTime[prev][next];
+}
+
+JobList Machine::getSchedule()
+{
+	return this->scheduledJobs;
+}
+
+int Machine::getJobProcessingTime(Job * job)
+{
+	return this->processingTime[job];
+}
+
+int Machine::getStartForAllResources(Job * job, int start)
+{
+	int searchStart = start;
+
+	for (pair<Resource*, int> r : job->getRequiredResources()) {
+		searchStart = max(searchStart, r.first->getFirstFreeInstant(searchStart, this->processingTime[job], r.second));
+	}
+	if (searchStart > start) {
+		return this->getStartForAllResources(job, searchStart);
+	}
+	else {
+		return searchStart;
+	}
+}
+
+void Machine::resetJobResourcesFrom(JobListIterator iterator)
+{
+	while (iterator != this->scheduledJobs.end()) {
+		(*iterator)->resetInstants();
+		++iterator;
+	}
+}
+
+JobList Machine::getJobSchedulableOnMachine(Machine * machine)
+{
+	JobList schedulableOnOtherMachine;
+
+	for (JobListIterator iterator = this->scheduledJobs.begin(); iterator != this->scheduledJobs.end(); ++iterator) {
+		if (machine->processingTime[*iterator] > 0) {
+			schedulableOnOtherMachine.push_back(*iterator);
+		}
+	}
+
+	return schedulableOnOtherMachine;
+}
+void Machine::calcCostTo(JobListIterator iterator)
 {
 	this->cost = 0;
 	auto current = this->scheduledJobs.begin();
@@ -10,7 +85,7 @@ void Machine::calcCostTo(list<Job*>::iterator iterator)
 	}
 }
 
-void Machine::scheduleFrom(list<Job*>::iterator iterator)
+void Machine::scheduleFrom(JobListIterator iterator)
 {
 	Job* previousJob;
 
@@ -46,7 +121,7 @@ void Machine::scheduleFrom(list<Job*>::iterator iterator)
 		if (job->getRequiredResources().size() == 1) {
 			for (pair<Resource*, int> r : job->getRequiredResources()) {
 				pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> i = r.first->useFirstFreeSlot(this->time, this->processingTime[job], r.second);
-				job->addInstant(r.first, i);
+				job->setInstants(r.first, i);
 				this->time = (*i.first)->getTime();
 			}
 		}
@@ -55,7 +130,7 @@ void Machine::scheduleFrom(list<Job*>::iterator iterator)
 			pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> check;
 			for (pair<Resource*, int> r : job->getRequiredResources()) {
 				check = r.first->use(firstStartAvailable, this->processingTime[job], r.second);
-				job->addInstant(r.first, check);
+				job->setInstants(r.first, check);
 			}
 			this->time = firstStartAvailable;
 		}
@@ -70,85 +145,7 @@ void Machine::scheduleFrom(list<Job*>::iterator iterator)
 
 	this->scheduled = true;
 }
-
-void Machine::resetJobResourcesFrom(list<Job*>::iterator iterator)
-{
-	while (iterator != this->scheduledJobs.end()) {
-		(*iterator)->resetInstants();
-		++iterator;
-	}
-}
-
-list<Job*> Machine::getJobSchedulableOnMachine(Machine * machine)
-{
-	list<Job*> schedulableOnOtherMachine;
-
-	for (list<Job*>::iterator iterator = this->scheduledJobs.begin(); iterator != this->scheduledJobs.end(); ++iterator) {
-		if (machine->processingTime[*iterator] > 0) {
-			schedulableOnOtherMachine.push_back(*iterator);
-		}
-	}
-
-	return schedulableOnOtherMachine;
-}
-
-int Machine::getStartForAllResources(Job * job, int start)
-{
-	int searchStart = start;
-
-	for (pair<Resource*, int> r : job->getRequiredResources()) {
-		searchStart = max(searchStart, r.first->getFirstFreeInstant(searchStart, this->processingTime[job], r.second));
-	}
-	if (searchStart > start) {
-		return this->getStartForAllResources(job, searchStart);
-	}
-	else {
-		return searchStart;
-	}
-}
-
-Machine::Machine(int id, unordered_map<Job*, int> processingTime, unordered_map<Job*, unordered_map<Job*, int>> setupTime)
-{
-	this->id = id;
-	this->processingTime = processingTime;
-	this->setupTime = setupTime;
-}
-
-Machine::~Machine()
-{
-}
-
-int Machine::getId()
-{
-	return this->id;
-}
-
-int Machine::getCost()
-{
-	return this->cost;
-}
-
-int Machine::getTime()
-{
-	return this->time;
-}
-
-int Machine::getJobProcessingTime(Job * job)
-{
-	return this->processingTime[job];
-}
-
-int Machine::getSetupTime(Job * prev, Job * next)
-{
-	return this->setupTime[prev][next];
-}
-
-list<Job*> Machine::getSchedule()
-{
-	return this->scheduledJobs;
-}
-
-void Machine::setSchedule(list<Job*> schedule)
+void Machine::setSchedule(JobList schedule)
 {
 	this->scheduledJobs = schedule;
 }
@@ -204,18 +201,6 @@ void Machine::reset()
 	this->scheduledJobs.clear();
 }
 
-void Machine::shiftScheduledByDueDate()
-{
-	this->previousScheduledJobs = this->scheduledJobs;
-	list<Job*>::iterator end = this->scheduledJobs.end();
-	for (list<Job*>::iterator current = this->scheduledJobs.begin(); current != prev(end); ++current) {
-		list<Job*>::iterator succeding = next(current);
-		if (Job::dueDateBefore(*current, *succeding)) {
-			iter_swap(current, succeding);
-		}
-	}
-}
-
 void Machine::schedulingShuffle()
 {
 	int randomIndex;
@@ -238,72 +223,6 @@ void Machine::randomJobSwap()
 	auto second = next(this->scheduledJobs.begin(), j);
 
 	iter_swap(first, second);
-}
-
-void Machine::partialShuffle()
-{
-	/*int begin = floor(this->scheduledJobs.size() / 4);
-	int end = ceil((3 * this->scheduledJobs.size()) / 4);
-	list<Job*>::iterator startShuffleIterator = next(this->scheduledJobs.begin(), begin);
-	list<Job*>::iterator endShuffleIterator = next(this->scheduledJobs.begin(), end);
-	int counter = 0;
-	while (counter < end - begin) {
-		iter_swap(startShuffleIterator);
-	}
-	this->scheduleFrom(startShuffleIterator);*/
-}
-
-void Machine::expansiveJobReschedule()
-{
-	// Get the most expansive job.
-	list<Job*>::iterator exspansiveJobIterator = this->scheduledJobs.begin();
-	list<Job*>::iterator current = this->scheduledJobs.begin();
-	while (current != this->scheduledJobs.end()) {
-		if ((*current)->getCost() > (*exspansiveJobIterator)->getCost()) {
-			exspansiveJobIterator = current;
-		}
-		current = next(current);
-	}
-
-	int cost = this->cost;
-
-	// One of the first three job schedule position.
-	auto earlyJobIterator = next(this->scheduledJobs.begin(), rand() % 3);
-	iter_swap(earlyJobIterator, exspansiveJobIterator);
-	this->schedule();
-
-	/*if (this->cost > cost) {
-		iter_swap(exspansiveJobIterator, earlyJobIterator);
-		this->scheduleFrom(earlyJobIterator);
-		return;
-	}*/
-
-	cost = this->cost;
-
-	do {
-		iter_swap(earlyJobIterator, next(earlyJobIterator));
-		this->scheduleFrom(earlyJobIterator);
-		earlyJobIterator = next(earlyJobIterator);
-		cost = this->cost;
-	} while (this->cost < cost && earlyJobIterator != this->scheduledJobs.end());
-
-	iter_swap(exspansiveJobIterator, prev(exspansiveJobIterator));
-	this->scheduleFrom(earlyJobIterator);
-	return;
-}
-
-void Machine::improveSetup()
-{
-	this->storeCurrentScheduling();
-
-	auto current = this->scheduledJobs.begin();
-	while (current != prev(this->scheduledJobs.end())) {
-		auto succeding = next(current);
-		if (this->setupTime[*current][*succeding] > this->setupTime[*succeding][*current]) {
-			iter_swap(current, succeding);
-		}
-		++current;
-	}
 }
 
 void Machine::improveTryAllSwap()
@@ -340,8 +259,8 @@ void Machine::storeCurrentScheduling()
 bool Machine::swapRandomJobToMachine(Machine * machine)
 {
 	// Gets a list of schedulable jobs.
-	list<Job*> schedulableOnThisMachine = machine->getJobSchedulableOnMachine(this);
-	list<Job*> schedulableOnOtherMachine = this->getJobSchedulableOnMachine(machine);
+	JobList schedulableOnThisMachine = machine->getJobSchedulableOnMachine(this);
+	JobList schedulableOnOtherMachine = this->getJobSchedulableOnMachine(machine);
 
 	if (schedulableOnThisMachine.size() <= 0 || schedulableOnOtherMachine.size() <= 0) {
 		return false;
@@ -386,7 +305,7 @@ bool Machine::swapRandomJobToMachine(Machine * machine)
 
 bool Machine::sendFirstAvailableJobToMachine(Machine * machine)
 {
-	list<Job*> schedulableOnOtherMachine = this->getJobSchedulableOnMachine(machine);
+	JobList schedulableOnOtherMachine = this->getJobSchedulableOnMachine(machine);
 
 	if (schedulableOnOtherMachine.size() <= 0) {
 		return false;

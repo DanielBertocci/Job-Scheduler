@@ -28,6 +28,11 @@ int Instant::getQuantity() const
 	return this->quantity;
 }
 
+void Instant::shiftLeft(int amount)
+{
+	this->time -= amount;
+}
+
 //Job * Instant::getJob() const
 //{
 //	return this->job;
