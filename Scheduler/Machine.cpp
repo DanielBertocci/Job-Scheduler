@@ -120,17 +120,21 @@ void Machine::scheduleFrom(JobListIterator iterator)
 		// Search first interval with all resources required.
 		if (job->getRequiredResources().size() == 1) {
 			for (pair<Resource*, int> r : job->getRequiredResources()) {
-				pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> i = r.first->useFirstFreeSlot(this->time, this->processingTime[job], r.second);
+				InstantIteratorSetPair i = r.first->useFirstFreeSlot(this->time, this->processingTime[job], r.second);
+				(*i.first)->setJob(job->getId());
+				(*i.second)->setJob(job->getId());
 				job->setInstants(r.first, i);
 				this->time = (*i.first)->getTime();
 			}
 		}
 		else {
 			int firstStartAvailable = this->getStartForAllResources(job, this->time);
-			pair<multiset<Instant*>::iterator, multiset<Instant*>::iterator> check;
+			InstantIteratorSetPair check;
 			for (pair<Resource*, int> r : job->getRequiredResources()) {
 				check = r.first->use(firstStartAvailable, this->processingTime[job], r.second);
 				job->setInstants(r.first, check);
+				(*check.first)->setJob(job->getId());
+				(*check.second)->setJob(job->getId());
 			}
 			this->time = firstStartAvailable;
 		}
@@ -140,7 +144,7 @@ void Machine::scheduleFrom(JobListIterator iterator)
 		this->cost += job->getCost();
 
 		// Wait the job processing time.
-		this->time += this->processingTime[job];
+		this->time = job->getEnd();
 	}
 
 	this->scheduled = true;

@@ -2,6 +2,21 @@
 #include <Windows.h>
 #include "TemplateResource.h"
 
+bool Solution::saveBest()
+{
+	int cost = this->calcCost();
+	if (cost >= this->bestCost) {
+		return false;
+	}
+
+	this->bestCost = cost;
+	for (Job* job : this->jobs) {
+		this->best[job] = new int[3]{ job->getStart(), job->getEnd(), job->getMachine()->getId() };
+	}
+
+	return true;
+}
+
 Solution::Solution(DataContainer * data)
 {
 	this->data = data;
@@ -140,6 +155,56 @@ void Solution::smartRandomSchedule()
 		}
 		counter++;
 		best->addJob(job);
+	}
+}
+
+void Solution::removeIdlesFromBest()
+{
+	sort(this->jobs.begin(), this->jobs.end(), Job::startBefore);
+	Job* prevJob = this->jobs.front();
+	Job* currentLastJob = prevJob;
+	unordered_map<int, Job*>lastMachineJob;
+	int distance;
+	int jobStart, jobEnd, jobMachine;
+	int lastJobStart, lastJobEnd, lastJobMachine;
+	int prevOnMachineStart, prevOnMachineEnd, setupOnMachine;
+	for (Job* job : this->jobs) {
+		jobStart = this->best[job][0];
+		jobEnd = this->best[job][1];
+		jobMachine = this->best[job][2];
+		lastJobStart = this->best[currentLastJob][0];
+		lastJobEnd = this->best[currentLastJob][1];
+		lastJobMachine = this->best[currentLastJob][2];
+		if (lastMachineJob[jobMachine] == nullptr) {
+			prevOnMachineStart = 0;
+			prevOnMachineEnd = 0;
+			setupOnMachine = 0;
+		}
+		else {
+			prevOnMachineStart = this->best[lastMachineJob[jobMachine]][0];
+			prevOnMachineEnd = this->best[lastMachineJob[jobMachine]][1];
+			setupOnMachine = this->data->getSetupTime(jobMachine, lastMachineJob[jobMachine]->getId(), job->getId());
+		}
+		if (prevJob->getEnd() > currentLastJob->getEnd()) {
+			currentLastJob = prevJob;
+		}
+
+		lastMachineJob[this->best[prevJob][2]] = prevJob;
+
+		distance = jobStart - lastJobEnd;
+		if (lastMachineJob[jobMachine]) {
+			distance = min(distance, jobStart - prevOnMachineEnd - setupOnMachine);
+		}
+
+		if (job->getStart() - distance < job->getReadyDate()) {
+			distance = job->getStart() - job->getReadyDate();
+		}
+
+		if (distance > 0) {
+			this->best[job][0] -= distance;
+			this->best[job][1] -= distance;
+		}
+		prevJob = job;
 	}
 }
 
@@ -304,6 +369,7 @@ void Solution::printGraph()
 
 void Solution::printResourceSchedulingGraph()
 {
+	sort(this->jobs.begin(), this->jobs.end(), Job::minorMachineIdBefore);
 	stringstream ss;
 	auto a = this->resources;
 	for (Resource* resource : this->resources)
@@ -318,7 +384,7 @@ void Solution::printResourceSchedulingGraph()
 			ss << "'Resource#" << resource->getId() << "',";
 			ss << "'','";
 			ss << "<div style = \"padding:5px;\">";
-			ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Quantity " << i->getQuantity() << "</h3><b>Start:</b> " << i->getTime() << "<br><b>End:</b> " << i->next()->getTime();
+			ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Quantity " << i->getQuantity() << "</h3><b>Start:</b> " << i->getTime() << "<br><b>End:</b> " << i->next()->getTime() << "<br><b>Job:</b> " << i->getJob();
 			ss << "</div>";
 			ss << "',";
 			ss << "new Date(0,0,0,0," << i->getTime() << "),";
@@ -327,6 +393,37 @@ void Solution::printResourceSchedulingGraph()
 		}
 	}
 	this->graph("solution_resource_graph.html", ss.str());
+}
+
+void Solution::printResourceUsageGraph()
+{
+	int prev;
+	int counter;
+	map<int, int> table;
+	for (Resource* r : this->resources)
+	{
+		stringstream ss;
+		prev = 0;
+		counter = 0;
+		ss << "['a','b']," << endl;
+		for (Instant* i : r->getUsage())
+		{
+			counter += i->getQuantity();
+			table[i->getTime()] = counter;
+		}
+		for (auto p : table) {
+			if (table[prev] != p.second) {
+				ss << "[" << p.first << "," << table[prev] << "]," << endl;
+			}
+			ss << "[" << p.first << "," << p.second << "]," << endl;
+			prev = p.first;
+		}
+		this->graphArea("solution_usage_area_chart" + to_string(r->getId()) + ".html", ss.str());
+		table.clear();
+		ss.clear();
+		counter = 0;
+		prev = 0;
+	}
 }
 
 void Solution::graph(string filePath, string jsData)
@@ -347,19 +444,35 @@ void Solution::graph(string filePath, string jsData)
 	out.close();
 }
 
+void Solution::graphArea(string filePath, string jsData)
+{
+	HRSRC graphTemplateResource = FindResource(NULL, MAKEINTRESOURCE(IDR_HTML_AREA_CHART), RT_HTML);
+	HGLOBAL graphTemplateResourceData = LoadResource(NULL, graphTemplateResource);
+	string graphTemplate((char*)LockResource(graphTemplateResourceData));
+
+
+	auto pos = graphTemplate.find("$DATA");
+	if (pos != string::npos) {
+		graphTemplate.replace(pos, 5, jsData);
+	}
+
+
+	ofstream out(filePath, ios::out | ios::binary);
+	out << graphTemplate;
+	out.close();
+}
+
 void Solution::save()
 {
 	int i = 0;
 	for (Job* job : this->jobs)
 	{
-		this->saved[job] = new int[3]{ job->getMachine()->getId(), job->getStart(), job->getEnd() };
+		this->saved[job] = new int[2]{ job->getStart(), job->getEnd() };
 	}
 	for (Machine* machine : this->machines) {
 		this->savedSchedule[machine] = machine->getSchedule();
 	}
-	for (Resource* resource : this->resources) {
-		this->savedResources[resource] = resource->getUsage();
-	}
+
 	this->savedCost = this->calcCost();
 	this->savedFlag = true;
 }
@@ -369,16 +482,24 @@ void Solution::load()
 	if (this->savedFlag == false) {
 		return;
 	}
+	for (Resource* resource : this->resources) {
+		resource->release();
+	}
 	for (Job* job : this->jobs)
 	{
-		job->setMachine(this->getMachineById(this->saved[job][0]));
-		job->setSchedule(this->saved[job][1], this->saved[job][2] - this->saved[job][1]);
+		job->setSchedule(this->saved[job][0], this->saved[job][1] - this->saved[job][0]);
+		for (pair<Resource*, int> pair : job->getRequiredResources()) {
+			InstantIteratorSetPair instants = pair.first->use(this->saved[job][0], this->saved[job][1] - this->saved[job][0], pair.second);
+			(*instants.first)->setJob(job->getId());
+			(*instants.second)->setJob(job->getId());
+			job->setInstants(pair.first, instants);
+		}
 	}
 	for (Machine* machine : this->machines) {
 		machine->setSchedule(this->savedSchedule[machine]);
-	}
-	for (Resource* resource : this->resources) {
-		resource->setUsage(this->savedResources[resource]);
+		for (Job* job : this->savedSchedule[machine]) {
+			job->setMachine(machine);
+		}
 	}
 }
 
@@ -412,6 +533,11 @@ int Solution::getTempCost()
 	return this->tempSavedCost;
 }
 
+int Solution::getBestCost()
+{
+	return this->bestCost;
+}
+
 bool getRowUtil(istream &input, vector<string> &row) {
 	string line, temp;
 
@@ -429,16 +555,44 @@ void Solution::store()
 {
 	string file = this->data->getSolutionFile();
 
-	ifstream f(file);
+	/*ifstream f(file);
 	if (f.good()) {
 		vector<string>line;
 		getRowUtil(f, line);
 		if (atoi(line[1].c_str()) <= this->calcCost()) {
 			return;
 		}
-	}
+	}*/
 
 	ofstream out(file);
 	this->print(out);
 	out.close();
+}
+
+void Solution::storeBest()
+{
+	string file = this->data->getSolutionFile();
+	ofstream out(file);
+	this->printBest(out);
+	out.close();
+}
+
+void Solution::printBest(ofstream& out)
+{
+	for (Job* job : this->jobs) {
+		job->setSchedule(this->best[job][0], this->best[job][1] - this->best[job][0]);
+	}
+
+	sort(this->jobs.begin(), this->jobs.end(), Job::startBefore);
+
+	out << "TWT;" << this->bestCost << ";;" << endl;
+	out << "JobId;MachineId;Start;Completion" << endl;
+
+	for (Job* job : this->jobs)
+	{
+		int* a = this->best[job];
+		out << job->getId() << ";";
+		out << this->best[job][2] << ";"; // MachineID.
+		out << this->best[job][0] << ";" << this->best[job][1] << endl; // Start & End.
+	}
 }

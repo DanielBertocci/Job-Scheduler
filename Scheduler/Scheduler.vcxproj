@@ -152,7 +152,6 @@
     <ClInclude Include="Instant.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="Machine.h" />
-    <ClInclude Include="main.h" />
     <ClInclude Include="RandomGenerator.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Solver.h" />
@@ -172,6 +171,12 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Scheduler1.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="areachart.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="resources.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

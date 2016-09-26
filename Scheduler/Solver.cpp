@@ -34,7 +34,15 @@ Solver::~Solver()
 
 int Solver::improve()
 {
+	if (RandomGenerator::getInstance().randomDouble() < 0.5) {
+		this->solution->relaxMachinesCosts();
+	}
+	else {
+		this->solution->randomJobSwapBetweenMachines();
+	}
 	this->solution->localSearch();
+	//this->solution->saveBest();
+	/*this->solution->localSearch();
 
 	this->saveTempBetter();
 
@@ -61,7 +69,7 @@ int Solver::improve()
 	this->saveTempBetter();
 
 	this->solution->loadTemp();
-
+	*/
 	return this->solution->calcCost();
 }
 
@@ -72,8 +80,8 @@ void Solver::save()
 
 int Solver::storeSolution()
 {
-	this->solution->load();
-	this->solution->localSearchCompressionFix();
+	//this->solution->load();
+	//this->solution->localSearchCompressionFix();
 	this->solution->store();
 	return this->solution->calcCost();
 }
@@ -82,6 +90,7 @@ void Solver::storeSolutionGraphs()
 {
 	this->solution->printGraph();
 	this->solution->printResourceSchedulingGraph();
+	this->solution->printResourceUsageGraph();
 }
 
 void Solver::saveTempBetter()

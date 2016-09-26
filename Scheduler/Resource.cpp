@@ -54,62 +54,38 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 		throw runtime_error("Something was wrong: something require more Resource#" + to_string(this->id) + " than available.");
 	}
 
-	int end = start + time;
 	int used = 0;
-	int usedInitial = 0;
-	int totalUsed = 0;
 
-	InstantSet focusedInstants;
+	InstantSetIterator instantIterator = this->used.begin();
+	Instant* usedInstant = nullptr;
+	Instant* beginInstant = new Instant(start, quantity);
 
-	for (Instant* usedInstant : this->used)
-	{
-		if (usedInstant->getTime() <= start) {
-			// Get initial count. Can contribute only positive instant with time greater than start.
-			// It means there was reasoures used before "start" instant.
-			if (usedInstant->getQuantity() > 0 && usedInstant->next()->getTime() > start) {
-				// Here use only start instant.
-				focusedInstants.insert(usedInstant->next());
+	while (instantIterator != this->used.end() && (*instantIterator)->getTime() <= start) {
+		used += (*instantIterator)->getQuantity();
+		++instantIterator;
+	}
 
-				used += usedInstant->getQuantity();
-				usedInitial += used;
-				totalUsed = used;
-
-				if (this->quantity - totalUsed < quantity) {
-					break;
-				}
-			}
+	while (instantIterator != this->used.end()) {
+		usedInstant = *instantIterator;
+		if (used <= this->quantity - quantity && beginInstant != nullptr && usedInstant->getTime() - beginInstant->getTime() >= time) {
+			return beginInstant->getTime();
 		}
-		else if (usedInstant->getTime() < end) {
-			if (usedInstant->getQuantity() > 0) {
-				focusedInstants.insert(usedInstant->next());
-			}
 
-			used += usedInstant->getQuantity();
-			totalUsed = max(totalUsed, used);
+		used += usedInstant->getQuantity();
 
-			if (this->quantity - totalUsed < quantity) {
-				break;
+		if (used <= this->quantity - quantity) {
+			if (beginInstant == nullptr) {
+				beginInstant = usedInstant;
 			}
 		}
 		else {
-			break;
+			beginInstant = nullptr;
 		}
-	}
 
-	if (this->quantity - totalUsed >= quantity) {
-		return start;
+		// Next iterator.
+		++instantIterator;
 	}
-
-	int freedResources = 0;
-	for (Instant* candidate : focusedInstants) {
-		// All end instant, so use - to increment.
-		freedResources -= candidate->getQuantity();
-		if (this->quantity - usedInitial + freedResources >= quantity) {
-			return this->getFirstFreeInstant(end, time, quantity);
-		}
-	}
-
-	return this->getFirstFreeInstant((*focusedInstants.rbegin())->getTime(), time, quantity);
+	return beginInstant->getTime();
 }
 
 InstantSetIteratorPair Resource::useFirstFreeSlot(int start, int time, int quantity)
@@ -119,7 +95,6 @@ InstantSetIteratorPair Resource::useFirstFreeSlot(int start, int time, int quant
 	Instant* end = new Instant(start + time, -quantity);
 	begin->next(end);
 	end->next(begin);
-	int before = this->used.size();
 	InstantSetIterator beginIterator = this->used.insert(begin);
 	InstantSetIterator endIterator = this->used.insert(end);
 

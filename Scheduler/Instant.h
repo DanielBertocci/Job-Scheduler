@@ -1,5 +1,4 @@
 #pragma once
-//#include "Job.h"
 
 using namespace std;
 
@@ -9,11 +8,11 @@ class Instant
 private:
 	int time;
 	int quantity;
-	//Job* job;
+	int jobId;
 	Instant* sibling;
 public:
 	Instant(int time, int quantity);
-	//Instant(int time, int quantity, Job* job);
+	Instant(int time, int quantity, int jobId);
 	~Instant();
 
 	struct InstantComparator
@@ -26,8 +25,8 @@ public:
 	int getTime() const;
 	int getQuantity() const;
 	void shiftLeft(int amount);
-	/*Job* getJob() const;
-	void setJob(Job* next);*/
+	int getJob() const;
+	void setJob(int jobId);
 
 	Instant* next();
 	void next(Instant* sibling);

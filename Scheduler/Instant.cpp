@@ -4,15 +4,15 @@ Instant::Instant(int time, int quantity)
 {
 	this->time = time;
 	this->quantity = quantity;
-	//this->job = nullptr;
+	this->jobId = -1;
 }
 
-//Instant::Instant(int time, int quantity, Job * job)
-//{
-//	this->time = time;
-//	this->quantity = quantity;
-//	this->job = job;
-//}
+Instant::Instant(int time, int quantity, int job)
+{
+	this->time = time;
+	this->quantity = quantity;
+	this->jobId = job;
+}
 
 Instant::~Instant()
 {
@@ -33,15 +33,15 @@ void Instant::shiftLeft(int amount)
 	this->time -= amount;
 }
 
-//Job * Instant::getJob() const
-//{
-//	return this->job;
-//}
+int Instant::getJob() const
+{
+	return this->jobId;
+}
 
-//void Instant::setJob(Job * next)
-//{
-//	this->job = job;
-//}
+void Instant::setJob(int jobId)
+{
+	this->jobId = jobId;
+}
 
 void Instant::next(Instant * sibling)
 {

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <map>
 #include <unordered_map>
 #include <sstream>
 #include "DataContainer.h"
@@ -29,6 +30,8 @@ private:
 	int tempSavedCost = INT_MAX;
 	JobIdStartEndMap saved;
 	JobIdStartEndMap savedTemp;
+	JobIdStartEndMap best;
+	int bestCost = INT_MAX;
 	JobVector jobs;
 	MachineScheduleMap savedSchedule;
 	MachineScheduleMap savedScheduleTemp;
@@ -44,6 +47,7 @@ public:
 	// Getters.
 	int getJobCount();
 	int getTempCost();
+	int getBestCost();
 	Machine* getMachineById(int id);
 
 	// Resets.
@@ -54,13 +58,18 @@ public:
 	void loadTemp();
 	void save();
 	void saveTemp();
+	bool saveBest();
 
 	// Print & store.
 	void graph(string filePath, string jsData);
+	void graphArea(string filePath, string jsData);
 	void print(ostream& out);
+	void printBest(ofstream& out);
 	void printGraph();
 	void printResourceSchedulingGraph();
+	void printResourceUsageGraph();
 	void store();
+	void storeBest();
 
 	// Algorithms
 	bool relaxMachinesCosts();
@@ -75,5 +84,6 @@ public:
 	void randomSchedule();
 	void schedule();
 	void smartRandomSchedule();
+	void removeIdlesFromBest();
 };
 

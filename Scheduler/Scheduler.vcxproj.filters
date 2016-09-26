@@ -36,9 +36,6 @@
     <ClInclude Include="Instant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RandomGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -79,5 +76,9 @@
     <ResourceCompile Include="Scheduler1.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources.html" />
+    <None Include="areachart.htm" />
   </ItemGroup>
 </Project>

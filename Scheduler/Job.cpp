@@ -73,8 +73,9 @@ void Job::resetInstants()
 	for (pair<Resource*, InstantIteratorSetPair> pair : this->instants)
 	{
 		// Remove Instants from memory.
-		delete (*pair.second.first);
-		delete (*pair.second.second);
+		// @todo manage save of this two
+		//delete (*pair.second.first);
+		//delete (*pair.second.second);
 
 		// Remove Instants from using storage.
 		pair.first->free(pair.second.first);

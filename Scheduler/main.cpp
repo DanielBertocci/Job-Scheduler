@@ -37,8 +37,10 @@ int main(int argc, char **argv) {
 
 	// Search solutions.
 	int cost = INT_MAX;
-	int newCost;
-	while (elapsed_ms < time && cost > 0) {
+	int newCost = cost;
+	int counter = 0;
+	while (/*elapsed_ms < time &&*/ cost > 0 && counter < 10) {
+		++counter;
 		newCost = solver->improve();
 		if (newCost < cost) {
 			cost = newCost;
@@ -62,5 +64,6 @@ int main(int argc, char **argv) {
 		solver->storeSolutionGraphs();
 	}
 	cout << elapsed_ms << " " << finalCost;
+	cin >> finalCost;
 	return 0;
 }
