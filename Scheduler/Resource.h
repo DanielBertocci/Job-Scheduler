@@ -2,6 +2,9 @@
 #include <set>
 #include <algorithm>
 #include <string>
+#include <sstream>
+#include <fstream>
+#include <map>
 #include "Instant.h"
 
 using namespace std;
@@ -24,6 +27,7 @@ public:
 
 	// Getters.
 	int getId() const;
+	int getQuantity() const;
 	InstantSet getUsage();
 
 	// Setters.
@@ -35,5 +39,9 @@ public:
 	int getFirstFreeInstant(int start, int time, int quantity);
 	void free(InstantSetIterator i);
 	void release();
+
+	// Prints.
+	void printUsage();
+	void graphArea(string filePath, string jsData);
 };
 

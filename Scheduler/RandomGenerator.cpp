@@ -1,8 +1,8 @@
 #include "RandomGenerator.h"
 
 RandomGenerator::RandomGenerator() {
-	/*unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-	gen = default_random_engine(seed);*/
+	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+	gen = default_random_engine(seed);
 }
 
 RandomGenerator& RandomGenerator::getInstance() {

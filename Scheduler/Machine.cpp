@@ -55,6 +55,66 @@ int Machine::getStartForAllResources(Job * job, int start)
 	}
 }
 
+void Machine::swapJobs(JobListIterator j1, JobListIterator j2)
+{
+	Job* a = *j1;
+	Job* b = *j2;
+
+	int newAStart = a->getReadyDate();
+	int newBStart = b->getReadyDate();
+	if (j1 != this->scheduledJobs.begin()) {
+		newBStart = max((*prev(j1))->getEnd() + this->setupTime[*prev(j1)][*j2], newBStart);
+	}
+	b->setSchedule(newBStart, b->getEnd() - b->getStart());
+	newAStart = max(newAStart, b->getEnd() + this->setupTime[b][a]);
+	a->setSchedule(newAStart, a->getEnd() - a->getStart());
+}
+
+bool Machine::canSwapImproveCost(JobListIterator j1, JobListIterator j2)
+{
+	Job* a = *j1;
+	Job* b = *j2;
+	int oldCost = a->getCost() + b->getCost();
+	int oldAStart = a->getStart();
+	int oldAEnd = a->getEnd();
+	int oldBStart = b->getStart();
+	int oldBEnd = b->getEnd();
+	int oldEndTime = b->getEnd();
+	int newEndTime = 0;
+	int newAStart, newAEnd, newBStart, newBEnd, newCost;
+
+	// B Job.
+	newBStart = oldAStart;
+	if (j1 != this->scheduledJobs.begin()) {
+		newBStart += (this->setupTime[*prev(j1)][*j2] - this->setupTime[*prev(j1)][*j1]);
+	}
+
+	newBStart = max(newBStart, b->getReadyDate());
+	newBEnd = newBStart + b->getEnd() - b->getStart();
+
+	// A Job.
+	newAStart = newBEnd + this->setupTime[*j2][*j1];
+	newAStart = max(newAStart, a->getReadyDate());
+	newAEnd = newAStart + (oldAEnd - oldAStart);
+
+	// End times.
+	if (j2 != prev(this->scheduledJobs.end())) {
+		oldEndTime = (*next(j2))->getStart();
+		newEndTime = this->setupTime[*j1][*next(j2)];
+	}
+	newEndTime += newAEnd;
+
+	// Cost.
+	newCost = max(newAEnd - a->getDueDate(), 0)*a->getPenalty() + max(newBEnd - b->getDueDate(), 0)*b->getPenalty();
+
+	//// Case LAST: j2 is tha last scheduled job.
+	//if (j2 == prev(this->scheduledJobs.end())) {
+	//	return newCost < oldCost;
+	//}
+
+	return newEndTime <= oldEndTime;
+}
+
 void Machine::resetJobResourcesFrom(JobListIterator iterator)
 {
 	while (iterator != this->scheduledJobs.end()) {
@@ -168,6 +228,20 @@ bool Machine::addJob(Job * job)
 	return true;
 }
 
+bool Machine::addJobFront(Job * job)
+{
+	int processingTime = this->processingTime[job];
+
+	// The job cannot be processed on this machine.
+	if (processingTime <= 0) return false;
+
+	// Set pointers.
+	this->scheduledJobs.push_front(job);
+	job->setMachine(this);
+
+	return true;
+}
+
 void Machine::schedule()
 {
 	this->scheduleFrom(this->scheduledJobs.begin());
@@ -218,6 +292,10 @@ void Machine::improveTryAllSwap()
 
 	auto current = this->scheduledJobs.begin();
 	while (current != prev(this->scheduledJobs.end()) && best > 0) {
+		/*if (!this->canSwapImproveCost(current, next(current))) {
+			++current;
+			continue;
+		}*/
 		iter_swap(current, next(current));
 		this->scheduleFrom(prev(current, skipFix));
 
@@ -255,31 +333,14 @@ bool Machine::swapRandomJobToMachine(Machine * machine)
 	Job* j2 = *next(schedulableOnThisMachine.begin(), index2);
 
 	// Schedule job.
-	this->addJob(j2);
-	machine->addJob(j1);
+	this->addJobFront(j2);
+	machine->addJobFront(j1);
 
-	// Remove from schedule vector.
-	auto fromThis = find(this->scheduledJobs.begin(), this->scheduledJobs.end(), j1);
-	if (fromThis != this->scheduledJobs.begin()) {
-		fromThis = prev(fromThis);
-		this->scheduledJobs.remove(j1);
-		this->scheduleFrom(fromThis);
-	}
-	else {
-		this->scheduledJobs.remove(j1);
-		this->schedule();
-	}
+	this->scheduledJobs.remove(j1);
+	machine->scheduledJobs.remove(j2);
 
-	auto fromOther = find(machine->scheduledJobs.begin(), machine->scheduledJobs.end(), j2);
-	if (fromOther != machine->scheduledJobs.begin()) {
-		fromOther = prev(fromOther);
-		machine->scheduledJobs.remove(j2);
-		machine->scheduleFrom(fromOther);
-	}
-	else {
-		machine->scheduledJobs.remove(j2);
-		machine->schedule();
-	}
+	this->schedule();
+	machine->schedule();
 
 	return true;
 }
@@ -296,7 +357,7 @@ bool Machine::sendFirstAvailableJobToMachine(Machine * machine)
 	Job* job = *next(schedulableOnOtherMachine.begin(), randomIndex);
 
 	// Schedule on other machine.
-	machine->addJob(job);
+	machine->addJobFront(job);
 	this->scheduledJobs.remove(job);
 
 	this->schedule();

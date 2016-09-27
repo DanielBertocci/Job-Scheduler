@@ -181,9 +181,16 @@ google.a.c.Na=function(){!google.a.c.S&&google.a.c.Jb&&google.a.c.xc()};google.a
         ]);
 
         var options = {
-            title: 'Company Performance',
-            hAxis: { title: 'Year', titleTextStyle: { color: '#333' } },
-            vAxis: { minValue: 0 }
+            title: 'Resource usage',
+            hAxis: { title: 'Time', titleTextStyle: { color: '#333' } },
+            vAxis: { minValue: 0 },
+            explorer: {},
+            series: {
+                1: {
+                    areaOpacity: 0,
+                    color: '#ff0000',
+                }
+            }
         };
 
         var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));

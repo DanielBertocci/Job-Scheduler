@@ -1,6 +1,6 @@
 #include "Resource.h"
-
-
+#include <Windows.h>
+#include "TemplateResource.h"
 
 Resource::Resource(int id, int quantity)
 {
@@ -16,6 +16,11 @@ Resource::~Resource()
 int Resource::getId() const
 {
 	return this->id;
+}
+
+int Resource::getQuantity() const
+{
+	return this->quantity;
 }
 
 InstantSet Resource::getUsage()
@@ -67,11 +72,6 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 
 	while (instantIterator != this->used.end()) {
 		usedInstant = *instantIterator;
-		if (used <= this->quantity - quantity && beginInstant != nullptr && usedInstant->getTime() - beginInstant->getTime() >= time) {
-			return beginInstant->getTime();
-		}
-
-		used += usedInstant->getQuantity();
 
 		if (used <= this->quantity - quantity) {
 			if (beginInstant == nullptr) {
@@ -82,10 +82,22 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 			beginInstant = nullptr;
 		}
 
+		if (beginInstant != nullptr && usedInstant->getTime() - beginInstant->getTime() >= time) {
+			return beginInstant->getTime();
+		}
+
+		used += usedInstant->getQuantity();
+
 		// Next iterator.
 		++instantIterator;
 	}
-	return beginInstant->getTime();
+	
+	if (beginInstant != nullptr) {
+		return beginInstant->getTime();
+	}
+	else {
+		return usedInstant->getTime();
+	}
 }
 
 InstantSetIteratorPair Resource::useFirstFreeSlot(int start, int time, int quantity)
@@ -108,4 +120,49 @@ void Resource::release()
 		delete r;
 	}
 	this->used.clear();
+}
+
+void Resource::printUsage()
+{
+	stringstream ss;
+	map<int, int> table;
+	int prev = 0;
+	int counter = 0;
+	ss << "['Instant','Usage','Max']," << endl;
+	for (Instant* i : this->used)
+	{
+		counter += i->getQuantity();
+		table[i->getTime()] = counter;
+	}
+	for (auto p : table) {
+		if (table[prev] != p.second) {
+			ss << "[" << p.first << "," << table[prev] << "," << this->getQuantity() << "]," << endl;
+		}
+		ss << "[" << p.first << "," << p.second << "," << this->getQuantity() << "]," << endl;
+		prev = p.first;
+	}
+	this->graphArea("solution_usage_area_chart" + to_string(this->getId()) + ".html", ss.str());
+	table.clear();
+	ss.clear();
+	counter = 0;
+	prev = 0;
+}
+
+void Resource::graphArea(string filePath, string jsData)
+{
+	HRSRC graphTemplateResource = FindResource(NULL, MAKEINTRESOURCE(IDR_HTML_AREA_CHART), RT_HTML);
+	HGLOBAL graphTemplateResourceData = LoadResource(NULL, graphTemplateResource);
+	string graphTemplate((char*)LockResource(graphTemplateResourceData));
+
+
+#include <sstream>
+	auto pos = graphTemplate.find("$DATA");
+	if (pos != string::npos) {
+		graphTemplate.replace(pos, 5, jsData);
+	}
+
+
+	ofstream out(filePath, ios::out | ios::binary);
+	out << graphTemplate;
+	out.close();
 }

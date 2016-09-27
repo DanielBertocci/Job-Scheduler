@@ -32,6 +32,8 @@ private:
 	void resetJobResourcesFrom(JobListIterator iterator);
 	list<Job*> getJobSchedulableOnMachine(Machine* machine);
 	int getStartForAllResources(Job* job, int start);
+	void swapJobs(JobListIterator j1, JobListIterator j2);
+	bool canSwapImproveCost(JobListIterator j1, JobListIterator j2);
 
 public:
 	Machine(
@@ -58,6 +60,7 @@ public:
 
 	// Utils.
 	bool addJob(Job* job);
+	bool addJobFront(Job* job);
 	bool sendFirstAvailableJobToMachine(Machine* machine);
 	bool swapRandomJobToMachine(Machine* machine);
 	void bestScheduleForCurrentJobs();

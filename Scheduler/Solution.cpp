@@ -97,6 +97,11 @@ int Solution::getJobCount()
 	return this->jobs.size();
 }
 
+int Solution::getSavedCost()
+{
+	return this->savedCost;
+}
+
 int Solution::calcCost()
 {
 	int cost = 0;
@@ -118,8 +123,8 @@ void Solution::improveResources()
 
 void Solution::randomSchedule()
 {
-	//srand(time(0));
-	random_shuffle(this->jobs.begin(), this->jobs.end());
+	/*srand(time(0));
+	random_shuffle(this->jobs.begin(), this->jobs.end());*/
 
 	this->reset();
 
@@ -210,7 +215,7 @@ void Solution::removeIdlesFromBest()
 
 void Solution::schedule()
 {
-	random_shuffle(this->machines.begin(), this->machines.end());
+	/*random_shuffle(this->machines.begin(), this->machines.end());*/
 	for (Machine* machine : this->machines)
 	{
 		machine->schedule();
@@ -271,13 +276,16 @@ void Solution::randomJobSwapOnMachine()
 }
 void Solution::randomJobSwapBetweenMachines()
 {
-	random_shuffle(this->machines.begin(), this->machines.end());
+	int index1 = RandomGenerator::getInstance().randomInt(0, this->machines.size() - 1);
+	int index2 = RandomGenerator::getInstance().randomInt(0, this->machines.size() - 1);
 
-	auto current = this->machines.begin();
+	if (index1 == index2) {
+		return;
+	}
 
-	(*current)->swapRandomJobToMachine(*(current + 1));
-	(*current)->bestScheduleForCurrentJobs();
-	(*(current + 1))->bestScheduleForCurrentJobs();
+	this->machines[index1]->swapRandomJobToMachine(this->machines[index2]);
+	this->machines[index1]->bestScheduleForCurrentJobs();
+	this->machines[index2]->bestScheduleForCurrentJobs();
 }
 void Solution::print(ostream & out)
 {
@@ -397,32 +405,9 @@ void Solution::printResourceSchedulingGraph()
 
 void Solution::printResourceUsageGraph()
 {
-	int prev;
-	int counter;
-	map<int, int> table;
 	for (Resource* r : this->resources)
 	{
-		stringstream ss;
-		prev = 0;
-		counter = 0;
-		ss << "['a','b']," << endl;
-		for (Instant* i : r->getUsage())
-		{
-			counter += i->getQuantity();
-			table[i->getTime()] = counter;
-		}
-		for (auto p : table) {
-			if (table[prev] != p.second) {
-				ss << "[" << p.first << "," << table[prev] << "]," << endl;
-			}
-			ss << "[" << p.first << "," << p.second << "]," << endl;
-			prev = p.first;
-		}
-		this->graphArea("solution_usage_area_chart" + to_string(r->getId()) + ".html", ss.str());
-		table.clear();
-		ss.clear();
-		counter = 0;
-		prev = 0;
+		r->printUsage();
 	}
 }
 

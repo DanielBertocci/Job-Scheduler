@@ -46,6 +46,7 @@ public:
 
 	// Getters.
 	int getJobCount();
+	int getSavedCost();
 	int getTempCost();
 	int getBestCost();
 	Machine* getMachineById(int id);

@@ -39,13 +39,13 @@ int main(int argc, char **argv) {
 	int cost = INT_MAX;
 	int newCost = cost;
 	int counter = 0;
-	while (/*elapsed_ms < time &&*/ cost > 0 && counter < 10) {
-		++counter;
+	while (elapsed_ms < time && cost > 0) {
+		counter++;
 		newCost = solver->improve();
 		if (newCost < cost) {
 			cost = newCost;
 			cout << "Current best: " << cost << endl;
-			//solver->save();
+			solver->save();
 		}
 		solver->updateDecay();
 
@@ -56,14 +56,14 @@ int main(int argc, char **argv) {
 	int finalCost = solver->storeSolution();
 
 	ofstream out("output.csv", ofstream::out | ofstream::app);
-	out << data->getFile() << ";" << elapsed_ms << " ms;" << cost << endl;
+	out << data->getFile() << ";" << elapsed_ms << " ms;" << finalCost << endl;
 	out.close();
 
 	// Save 2 file with graph of solution and resource usage.
 	if (verbose == true) {
 		solver->storeSolutionGraphs();
 	}
-	cout << elapsed_ms << " " << finalCost;
+	cout << elapsed_ms << " " << finalCost << " " << counter;
 	cin >> finalCost;
 	return 0;
 }
