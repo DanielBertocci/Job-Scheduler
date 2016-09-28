@@ -74,8 +74,8 @@ void Job::resetInstants()
 	{
 		// Remove Instants from memory.
 		// @todo manage save of this two
-		//delete (*pair.second.first);
-		//delete (*pair.second.second);
+		delete (*pair.second.first);
+		delete (*pair.second.second);
 
 		// Remove Instants from using storage.
 		pair.first->free(pair.second.first);

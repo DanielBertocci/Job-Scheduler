@@ -45,9 +45,8 @@ int main(int argc, char **argv) {
 		if (newCost < cost) {
 			cost = newCost;
 			cout << "Current best: " << cost << endl;
-			solver->save();
+			solver->saveBest();
 		}
-		solver->updateDecay();
 
 		end = chrono::system_clock::now();
 		elapsed_ms = chrono::duration_cast<chrono::milliseconds>(end - start).count();
@@ -64,6 +63,6 @@ int main(int argc, char **argv) {
 		solver->storeSolutionGraphs();
 	}
 	cout << elapsed_ms << " " << finalCost << " " << counter;
-	cin >> finalCost;
+	//cin >> finalCost;
 	return 0;
 }

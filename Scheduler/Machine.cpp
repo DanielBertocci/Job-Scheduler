@@ -242,6 +242,23 @@ bool Machine::addJobFront(Job * job)
 	return true;
 }
 
+JobListIterator Machine::removeJob(Job * job)
+{
+	/*JobListIterator find = this->scheduledJobs.end();
+	for (JobListIterator i = this->scheduledJobs.begin(); i != this->scheduledJobs.end(); ++i) {
+		if ((*i)->getId() == job->getId()) {
+			find = i;
+			break;
+		}
+	}
+
+	if (find == this->scheduledJobs.end()) {
+		runtime_error("The job is not scheduled");
+	}*/
+	this->scheduledJobs.remove(job);
+	return JobListIterator();
+}
+
 void Machine::schedule()
 {
 	this->scheduleFrom(this->scheduledJobs.begin());

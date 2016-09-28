@@ -73,6 +73,7 @@ void DataContainer::parseProcessingTime(istream & in)
 {
 	vector<string> row;
 	int jobId, machineId, pTime;
+	this->availableMachinesByJob = new vector<int>[this->jobs];
 
 	// Initialize the processingTime matrix.
 	this->processingTime = matrixInitializer(this->jobs, this->machines);
@@ -82,7 +83,7 @@ void DataContainer::parseProcessingTime(istream & in)
 		jobId = stoi(row[0]);
 		machineId = stoi(row[1]);
 		pTime = stoi(row[2]);
-
+		availableMachinesByJob[jobId - 1].push_back(machineId);
 		this->processingTime[jobId - 1][machineId] = pTime;
 	}
 }
@@ -208,6 +209,11 @@ int DataContainer::getMachineNumber()
 int DataContainer::getResourceNumber()
 {
 	return this->resources;
+}
+
+vector<int>& DataContainer::getAvailableMachinesByJob(int jobId)
+{
+	return this->availableMachinesByJob[jobId - 1];
 }
 
 int DataContainer::getProcessingTime(int jobId, int machineId)

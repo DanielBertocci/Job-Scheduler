@@ -245,3 +245,4 @@ ModelManifest.xml
 .fake/
 /Scheduler/I_30_2_02_02_2_sol.csv
 *.csv
+*.html

@@ -31,6 +31,8 @@ private:
 	// [job][resource_type]
 	int** resourceRequired;
 
+	vector<int>* availableMachinesByJob;
+
 	// Parsing file functions.
 	void parseJobsNumber(istream& input);
 	void parseMachinesNumber(istream& input);
@@ -48,6 +50,7 @@ public:
 	int getJobNumber();
 	int getMachineNumber();
 	int getResourceNumber();
+	vector<int>& getAvailableMachinesByJob(int jobId);
 
 	// Time getters.
 	int getProcessingTime(int jobId, int machineId);

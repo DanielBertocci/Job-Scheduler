@@ -15,7 +15,7 @@ typedef vector<Job*> JobVector;
 typedef vector<Job*>::iterator JobVectorIterator;
 typedef vector<Machine*> MachineVector;
 typedef vector<Resource*> ResourceVector;
-typedef unordered_map<Job*, int*> JobIdStartEndMap;
+typedef unordered_map<Job*, int[3]> JobIdStartEndMap;
 typedef unordered_map<Machine*, JobList> MachineScheduleMap;
 typedef unordered_map<Resource*, InstantSet> ResourceInstantSetMap;
 
@@ -56,10 +56,9 @@ public:
 
 	// Save & Load.
 	void load();
-	void loadTemp();
 	void save();
-	void saveTemp();
 	bool saveBest();
+	void loadBest();
 
 	// Print & store.
 	void graph(string filePath, string jsData);
@@ -82,9 +81,10 @@ public:
 	void localSearchNoised();
 	void randomJobSwapBetweenMachines();
 	void randomJobSwapOnMachine();
+	void randomJobToAnotherMachine();
 	void randomSchedule();
+	void removeIdlesFromBest();
 	void schedule();
 	void smartRandomSchedule();
-	void removeIdlesFromBest();
 };
 

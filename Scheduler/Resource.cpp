@@ -60,10 +60,11 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 	}
 
 	int used = 0;
+	int startFound = -1;
 
 	InstantSetIterator instantIterator = this->used.begin();
 	Instant* usedInstant = nullptr;
-	Instant* beginInstant = new Instant(start, quantity);
+	int beginInstantTime = start;
 
 	while (instantIterator != this->used.end() && (*instantIterator)->getTime() <= start) {
 		used += (*instantIterator)->getQuantity();
@@ -74,16 +75,16 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 		usedInstant = *instantIterator;
 
 		if (used <= this->quantity - quantity) {
-			if (beginInstant == nullptr) {
-				beginInstant = usedInstant;
+			if (beginInstantTime == -1) {
+				beginInstantTime = usedInstant->getTime();
 			}
 		}
 		else {
-			beginInstant = nullptr;
+			beginInstantTime = -1;
 		}
 
-		if (beginInstant != nullptr && usedInstant->getTime() - beginInstant->getTime() >= time) {
-			return beginInstant->getTime();
+		if (beginInstantTime != -1 && usedInstant->getTime() - beginInstantTime >= time) {
+			return beginInstantTime;
 		}
 
 		used += usedInstant->getQuantity();
@@ -92,8 +93,8 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 		++instantIterator;
 	}
 	
-	if (beginInstant != nullptr) {
-		return beginInstant->getTime();
+	if (beginInstantTime != -1) {
+		return beginInstantTime;
 	}
 	else {
 		return usedInstant->getTime();

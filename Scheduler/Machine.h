@@ -61,6 +61,7 @@ public:
 	// Utils.
 	bool addJob(Job* job);
 	bool addJobFront(Job* job);
+	JobListIterator removeJob(Job* job);
 	bool sendFirstAvailableJobToMachine(Machine* machine);
 	bool swapRandomJobToMachine(Machine* machine);
 	void bestScheduleForCurrentJobs();

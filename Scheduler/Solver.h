@@ -20,7 +20,8 @@ public:
 	int improve();
 	int storeSolution();
 	void save();
-	void saveTempBetter();
+	void saveBest();
+	void loadBest();
 	void storeSolutionGraphs();
 	void updateDecay();
 };

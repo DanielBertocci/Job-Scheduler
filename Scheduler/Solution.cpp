@@ -11,10 +11,30 @@ bool Solution::saveBest()
 
 	this->bestCost = cost;
 	for (Job* job : this->jobs) {
-		this->best[job] = new int[3]{ job->getStart(), job->getEnd(), job->getMachine()->getId() };
+		this->best[job][0] = job->getStart();
+		this->best[job][1] = job->getEnd();
+		this->best[job][2] = job->getMachine()->getId();
 	}
 
 	return true;
+}
+
+void Solution::loadBest()
+{
+	for (Resource* resource : this->resources) {
+		resource->release();
+	}
+	for (Job* job : this->jobs)
+	{
+		job->setSchedule(this->best[job][0], this->best[job][1] - this->best[job][0]);
+		job->setMachine(this->getMachineById(this->best[job][2]));
+		for (pair<Resource*, int> pair : job->getRequiredResources()) {
+			InstantIteratorSetPair instants = pair.first->use(this->best[job][0], this->best[job][1] - this->best[job][0], pair.second);
+			(*instants.first)->setJob(job->getId());
+			(*instants.second)->setJob(job->getId());
+			job->setInstants(pair.first, instants);
+		}
+	}
 }
 
 Solution::Solution(DataContainer * data)
@@ -123,8 +143,8 @@ void Solution::improveResources()
 
 void Solution::randomSchedule()
 {
-	/*srand(time(0));
-	random_shuffle(this->jobs.begin(), this->jobs.end());*/
+	srand(time(0));
+	random_shuffle(this->jobs.begin(), this->jobs.end());
 
 	this->reset();
 
@@ -272,7 +292,36 @@ void Solution::randomJobSwapOnMachine()
 {
 	for (Machine* m : this->machines) {
 		m->randomJobSwap();
+		m->bestScheduleForCurrentJobs();
 	}
+}
+void Solution::randomJobToAnotherMachine()
+{
+	vector<int> machines;
+	Job* job;
+	int counter = 0;
+	do {
+		++counter;
+		int index = RandomGenerator::getInstance().randomInt(0, this->getJobCount() - 1);
+		job = this->jobs[index];
+		machines = this->data->getAvailableMachinesByJob(job->getId());
+	} while (machines.size() <= 1 && counter < 5);
+
+	int machineIndex = RandomGenerator::getInstance().randomInt(0, machines.size() - 1);
+
+	Machine* oldMachine = job->getMachine();
+	int newMachineId = machines[machineIndex];
+	if (oldMachine->getId() == newMachineId) return;
+
+	Machine* newMachine = this->getMachineById(newMachineId);
+
+	oldMachine->removeJob(job);
+	newMachine->addJobFront(job);
+
+	oldMachine->schedule();
+	newMachine->schedule();
+
+	newMachine->bestScheduleForCurrentJobs();
 }
 void Solution::randomJobSwapBetweenMachines()
 {
@@ -280,7 +329,7 @@ void Solution::randomJobSwapBetweenMachines()
 	int index2 = RandomGenerator::getInstance().randomInt(0, this->machines.size() - 1);
 
 	if (index1 == index2) {
-		return;
+		index2 = (index1 + 1) % this->machines.size();
 	}
 
 	this->machines[index1]->swapRandomJobToMachine(this->machines[index2]);
@@ -452,7 +501,8 @@ void Solution::save()
 	int i = 0;
 	for (Job* job : this->jobs)
 	{
-		this->saved[job] = new int[2]{ job->getStart(), job->getEnd() };
+		this->saved[job][0] = job->getStart();
+		this->saved[job][1] = job->getEnd();
 	}
 	for (Machine* machine : this->machines) {
 		this->savedSchedule[machine] = machine->getSchedule();
@@ -485,31 +535,6 @@ void Solution::load()
 		for (Job* job : this->savedSchedule[machine]) {
 			job->setMachine(machine);
 		}
-	}
-}
-
-void Solution::saveTemp()
-{
-	int i = 0;
-	for (Job* job : this->jobs)
-	{
-		this->savedTemp[job] = new int[3]{ job->getMachine()->getId(), job->getStart(), job->getEnd() };
-	}
-	for (Machine* machine : this->machines) {
-		this->savedScheduleTemp[machine] = machine->getSchedule();
-	}
-	this->tempSavedCost = this->calcCost();
-}
-
-void Solution::loadTemp()
-{
-	for (Job* job : this->jobs)
-	{
-		job->setMachine(this->getMachineById(this->savedTemp[job][0]));
-		job->setSchedule(this->savedTemp[job][1], this->savedTemp[job][2] - this->savedTemp[job][1]);
-	}
-	for (Machine* machine : this->machines) {
-		machine->setSchedule(this->savedScheduleTemp[machine]);
 	}
 }
 
