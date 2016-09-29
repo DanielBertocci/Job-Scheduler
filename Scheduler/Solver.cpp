@@ -101,7 +101,7 @@ void Solver::loadBest()
 int Solver::storeSolution()
 {
 	this->solution->loadBest();
-	this->solution->localSearchCompressionFix();
+	this->solution->removeIdleFromMachines();
 	this->solution->store();
 	return this->solution->calcCost();
 }
