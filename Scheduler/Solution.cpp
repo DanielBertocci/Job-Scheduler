@@ -16,6 +16,10 @@ bool Solution::saveBest()
 		this->best[job][2] = job->getMachine()->getId();
 	}
 
+	for (Machine* machine : this->machines) {
+		this->savedSchedule[machine] = machine->getSchedule();
+	}
+
 	return true;
 }
 
@@ -34,6 +38,9 @@ void Solution::loadBest()
 			(*instants.second)->setJob(job->getId());
 			job->setInstants(pair.first, instants);
 		}
+	}
+	for (Machine* machine : this->machines) {
+		machine->setSchedule(this->savedSchedule[machine]);
 	}
 }
 
@@ -61,15 +68,15 @@ Solution::Solution(DataContainer * data)
 			}
 		}
 
-		this->jobs.push_back(
-			new Job(
-				jobId,
-				this->data->getDueDate(jobId),
-				this->data->getReleaseDate(jobId),
-				this->data->getTardinessPenalty(jobId),
-				resources
-			)
+		Job* job = new Job(
+			jobId,
+			this->data->getDueDate(jobId),
+			this->data->getReleaseDate(jobId),
+			this->data->getTardinessPenalty(jobId),
+			resources
 		);
+
+		this->jobs.push_back(job);
 	}
 
 	// Build Machine objects.
@@ -180,6 +187,29 @@ void Solution::smartRandomSchedule()
 		}
 		counter++;
 		best->addJob(job);
+	}
+}
+
+void Solution::removeIdleFromMachines()
+{
+	random_shuffle(machines.begin(), machines.end());
+	list<Machine*> machines(this->machines.begin(), this->machines.end());
+	unordered_map<Machine*, JobListIterator> iterators;
+
+	for (Machine* m : machines) {
+		iterators[m] = m->tryRemoveIdle();
+	}
+
+	while (machines.size() != 0) {
+		for (Machine* m : machines) {
+			JobListIterator i = m->tryRemoveIdle(iterators[m]);
+			if (i == iterators[m]) {
+				machines.remove(m);
+			}
+			else {
+				iterators[m] = i;
+			}
+		}
 	}
 }
 
@@ -414,7 +444,17 @@ void Solution::printGraph()
 		ss << "'Machine " << job->getMachine()->getId() << "',";
 		ss << "'','";
 		ss << "<div style = \"padding:5px;\">";
-		ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Job " << job->getId() << "</h3><b>Cost:</b> " << job->getCost() << "<br><b>Start:</b> " << job->getStart() << "<br><b>End:</b> " << job->getEnd() << "<br><b>Due Date:</b> " << job->getDueDate() << "<br><b>Ready Date:</b> " << job->getReadyDate() << "<br><b>Penalty:</b> " << job->getPenalty();
+		ss << "<h3 style=\"border: 1px solid #000; margin-top: 0; padding: 5px;\">Job " << job->getId() << "</h3>";
+		ss << "<b>Cost:</b> " << job->getCost() << "<br>";
+		ss << "<b>Start : </b> " << job->getStart() << "<br>";
+		ss << "<b>End : </b> " << job->getEnd() << "<br>";
+		ss << "<b>Due Date : </b> " << job->getDueDate() << "<br>";
+		ss << "<b>Ready Date : </b> " << job->getReadyDate() << "<br>";
+		ss << "<b>Penalty:</b> " << job->getPenalty() << "<br>";
+		ss << "<b>Resources:</b> ";
+		for (auto p : job->getRequiredResources()) {
+			ss << "(<b>" << p.first->getId() << "</b>," << p.second << ") ";
+		}
 		ss << "</div>";
 		ss << "',";
 		ss << "new Date(0,0,0,0," << job->getStart() << "),";

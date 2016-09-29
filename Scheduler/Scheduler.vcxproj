@@ -154,6 +154,7 @@
     <ClInclude Include="Machine.h" />
     <ClInclude Include="RandomGenerator.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ScheduleList.h" />
     <ClInclude Include="Solver.h" />
     <ClInclude Include="Solution.h" />
     <ClInclude Include="TemplateResource.h" />
@@ -166,6 +167,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RandomGenerator.cpp" />
     <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ScheduleList.cpp" />
     <ClCompile Include="Solution.cpp" />
     <ClCompile Include="Solver.cpp" />
   </ItemGroup>

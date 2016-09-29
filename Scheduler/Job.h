@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "Machine.h"
 #include "Resource.h"
+#include "ScheduleList.h"
 
 using namespace std;
 
@@ -32,9 +33,21 @@ private:
 	int end;
 	Machine* machine;
 public:
-
 	Job(int id, int dueDate, int readyDate, int penalty, ResourceQuantityMap resources);
 	~Job();
+
+	struct CostComparator {
+		bool operator()(Job* a, Job* b) const {
+			return a->getCost() < b->getCost();
+		}
+	};
+
+	typedef multiset<Job*, Job::CostComparator> JobSetStartOrder;
+	typedef JobSetStartOrder::iterator JobSetStartOrderIterator;
+
+	static JobSetStartOrder scheduling;
+	JobSetStartOrderIterator schedulingPosition;
+	list<Job*>::iterator schedulingMachinePosition;
 
 	// Getters.
 	int getCost();

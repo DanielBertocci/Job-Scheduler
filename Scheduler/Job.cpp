@@ -1,5 +1,5 @@
 #include "Job.h"
-
+multiset<Job*, Job::CostComparator>  Job::scheduling = {};
 Job::Job(int id, int dueDate, int readyDate, int penalty, ResourceQuantityMap resources)
 {
 	this->id = id;
@@ -7,6 +7,7 @@ Job::Job(int id, int dueDate, int readyDate, int penalty, ResourceQuantityMap re
 	this->readyDate = readyDate;
 	this->penalty = penalty;
 	this->resources = resources;
+	this->schedulingPosition = Job::scheduling.end();
 }
 
 Job::~Job() {}

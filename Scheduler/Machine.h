@@ -2,8 +2,9 @@
 
 #include <list>
 #include <unordered_map>
+#include <set>
 #include <iostream>
-#include "Job.h"
+#include "ScheduleList.h"
 #include "RandomGenerator.h"
 
 using namespace std;
@@ -43,6 +44,8 @@ public:
 	);
 	~Machine();
 
+	static multiset<int>scheduleSet;
+
 	// Getters.
 	int getId();
 	int getCost();
@@ -69,6 +72,8 @@ public:
 	void previousSchedule();
 	void randomJobSwap();
 	void schedule();
+	JobListIterator tryRemoveIdle();
+	JobListIterator tryRemoveIdle(JobListIterator iterator);
 	void schedulingShuffle();
 };
 

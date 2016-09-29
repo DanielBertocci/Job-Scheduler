@@ -18,9 +18,12 @@ public:
 	~Solver();
 
 	int improve();
+	int scheduleByMachineId(int machineId);
 	int storeSolution();
 	void save();
+	void load();
 	void saveBest();
+	int tryAlgorithm();
 	void loadBest();
 	void storeSolutionGraphs();
 	void updateDecay();

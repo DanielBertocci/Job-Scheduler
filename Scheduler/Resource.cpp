@@ -89,6 +89,15 @@ int Resource::getFirstFreeInstant(int start, int time, int quantity)
 
 		used += usedInstant->getQuantity();
 
+		if (used <= this->quantity - quantity) {
+			if (beginInstantTime == -1) {
+				beginInstantTime = usedInstant->getTime();
+			}
+		}
+		else {
+			beginInstantTime = -1;
+		}
+
 		// Next iterator.
 		++instantIterator;
 	}

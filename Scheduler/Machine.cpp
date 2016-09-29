@@ -1,4 +1,5 @@
 #include "Machine.h"
+
 Machine::Machine(int id, JobProcessingTimeMap processingTime, JobSetupTimeMap setupTime)
 {
 	this->id = id;
@@ -148,7 +149,7 @@ void Machine::calcCostTo(JobListIterator iterator)
 void Machine::scheduleFrom(JobListIterator iterator)
 {
 	Job* previousJob;
-
+	Job* firstScheduledJob = *iterator;
 	// Get cost and release other resources.
 	this->calcCostTo(iterator);
 	this->resetJobResourcesFrom(iterator);
@@ -165,6 +166,10 @@ void Machine::scheduleFrom(JobListIterator iterator)
 
 	while (iterator != this->scheduledJobs.end()) {
 		Job* job = *iterator;
+		job->schedulingMachinePosition = iterator;
+		if (job->schedulingPosition != Job::scheduling.end()) {
+			Job::scheduling.erase(job->schedulingPosition);
+		}
 
 		// Cycle counter;
 		++iterator;
@@ -201,11 +206,22 @@ void Machine::scheduleFrom(JobListIterator iterator)
 
 		// Set start end in the job object.
 		job->setSchedule(this->time, this->processingTime[job]);
+		job->schedulingPosition = Job::scheduling.insert(job);
 		this->cost += job->getCost();
 
 		// Wait the job processing time.
 		this->time = job->getEnd();
 	}
+
+	auto it = firstScheduledJob->schedulingPosition;
+	/*while (it != Job::scheduling.end() && (*it)->getMachine() == this)
+	{
+		++it;
+	}
+	if (it == Job::scheduling.end()) {
+		return;
+	}
+	(*it)->getMachine()->scheduleFrom((*it)->schedulingMachinePosition);*/
 
 	this->scheduled = true;
 }
@@ -262,6 +278,37 @@ JobListIterator Machine::removeJob(Job * job)
 void Machine::schedule()
 {
 	this->scheduleFrom(this->scheduledJobs.begin());
+}
+
+JobListIterator Machine::tryRemoveIdle()
+{
+	return this->tryRemoveIdle(this->scheduledJobs.begin());
+}
+
+JobListIterator Machine::tryRemoveIdle(JobListIterator iterator)
+{
+	if (iterator == this->scheduledJobs.end()) {
+		return iterator;
+	}
+
+	JobListIterator endSearch = prev(this->scheduledJobs.end(), 2);
+	Job* current;
+	Job* nextJob;
+	int span;
+	int oldCost = this->cost;
+	JobListIterator i;
+	for (i = iterator; next(i) != endSearch; ++i) {
+		current = *i;
+		nextJob = *next(i);
+		span = nextJob->getStart() - current->getEnd() - this->setupTime[current][nextJob];
+		if (span > 0) {
+			this->scheduleFrom(i);
+			if (this->cost < oldCost) {
+				return next(i);
+			}
+		}
+	}
+	return this->scheduledJobs.end();
 }
 
 void Machine::resetJobResources()

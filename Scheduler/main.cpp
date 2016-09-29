@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
 		verbose = true;
 	}
 
+INIT:
 	DataContainer *data = DataContainer::fromFile(inputFile);
 	Solver* solver = new Solver(data);
 
@@ -63,6 +64,36 @@ int main(int argc, char **argv) {
 		solver->storeSolutionGraphs();
 	}
 	cout << elapsed_ms << " " << finalCost << " " << counter;
-	//cin >> finalCost;
+
+	int option = 1;
+	int machine = -1;
+	while (option > 0) {
+		cout << endl << "Option: ";
+		cin >> option;
+		switch (option) {
+		case 0:
+			goto INIT;
+			break;
+		case 1:
+			cout << "Machine: ";
+			cin >> machine;
+			cout << "New cost: " << solver->scheduleByMachineId(machine) << endl;
+			break;
+		case 2:
+			solver->save();
+			cout << "Saved." << endl;
+			break;
+		case 3:
+			solver->load();
+			solver->storeSolutionGraphs();
+			cout << "Loaded." << endl;
+			break;
+		case 4:
+			cout << "New cost: " << solver->tryAlgorithm();
+			cout << "Tryed." << endl;
+			break;
+
+		}
+	}
 	return 0;
 }

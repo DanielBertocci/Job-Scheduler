@@ -38,7 +38,6 @@ private:
 	MachineVector machines;
 	ResourceInstantSetMap savedResources;
 	ResourceVector resources;
-
 public:
 
 	Solution(DataContainer* data);
@@ -86,5 +85,6 @@ public:
 	void removeIdlesFromBest();
 	void schedule();
 	void smartRandomSchedule();
+	void removeIdleFromMachines();
 };
 

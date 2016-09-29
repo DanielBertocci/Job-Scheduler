@@ -36,23 +36,27 @@ Solver::~Solver()
 int Solver::improve()
 {
 	int cost = this->solution->calcCost();
-	for (int i = 0; i < this->solution->getJobCount() / 2; ++i) {
+	/*for (int i = 0; i < this->solution->getJobCount() / 2; ++i) {
 		if (RandomGenerator::getInstance().randomDouble() < 0.5) {
-			if (RandomGenerator::getInstance().randomDouble() < 0.8) {
-				this->solution->randomJobToAnotherMachine();
-			}
-			else {
-				this->solution->relaxMachinesCosts();
-			}
+			this->solution->randomJobToAnotherMachine();
 		}
 		else {
 			this->solution->randomJobSwapBetweenMachines();
 		}
+	}*/
+	if (RandomGenerator::getInstance().randomDouble() < 0.4) {
+		this->solution->relaxMachinesCosts();
 	}
-
 	this->solution->localSearch();
 	this->updateDecay();
 
+	return this->solution->calcCost();
+}
+
+int Solver::scheduleByMachineId(int machineId)
+{
+	this->solution->getMachineById(machineId)->schedule();
+	this->solution->printGraph();
 	return this->solution->calcCost();
 }
 
@@ -61,9 +65,21 @@ void Solver::save()
 	this->solution->save();
 }
 
+void Solver::load()
+{
+	this->solution->load();
+}
+
 void Solver::saveBest()
 {
 	this->solution->saveBest();
+}
+
+int Solver::tryAlgorithm()
+{
+	this->solution->removeIdleFromMachines();
+	this->solution->printGraph();
+	return this->solution->calcCost();
 }
 
 void Solver::loadBest()
