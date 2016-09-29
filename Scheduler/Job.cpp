@@ -89,6 +89,10 @@ void Job::resetInstants()
 
 void Job::setSchedule(int start, int processingTime)
 {
+	if (start < this->readyDate) {
+		runtime_error("Job cannot be scheduled before readyTime");
+	}
+
 	this->start = start;
 	this->end = start + processingTime;
 }
