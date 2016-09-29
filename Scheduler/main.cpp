@@ -27,7 +27,6 @@ int main(int argc, char **argv) {
 		verbose = true;
 	}
 
-INIT:
 	DataContainer *data = DataContainer::fromFile(inputFile);
 	Solver* solver = new Solver(data);
 
@@ -40,29 +39,73 @@ INIT:
 	int cost = INT_MAX;
 	int newCost = cost;
 	int counter = 0;
-	while (elapsed_ms < time && cost > 0) {
-		counter++;
-		newCost = solver->improve();
-		if (newCost < cost) {
-			cost = newCost;
-			//cout << "Current best: " << cost << endl;
-		}
+	try
+	{
+		while (elapsed_ms < time && cost > 0) {
+			counter++;
+			newCost = solver->improve();
+			if (newCost < cost) {
+				cost = newCost;
+				//cout << "Current best: " << cost << endl;
+			}
 
-		end = chrono::system_clock::now();
-		elapsed_ms = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+			end = chrono::system_clock::now();
+			elapsed_ms = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+		}
+	}
+	catch (...)
+	{
+		try
+		{
+			solver->loadBest();
+		}
+		catch (...)
+		{
+			solver = new Solver(data);
+			solver->improve();
+		}
 	}
 
-	int finalCost = solver->storeSolution();
+	int finalCost;
 
-	ofstream out("output.csv", ofstream::out | ofstream::app);
-	out << data->getFile() << ";" << elapsed_ms << " ms;" << finalCost << endl;
-	out.close();
+	try
+	{
+		finalCost = solver->storeSolution();
+		cout << elapsed_ms << " " << finalCost << " ";
+	}
+	catch (...)
+	{
+		try
+		{
+			solver->solution->loadBest();
+			finalCost = solver->solution->calcCost();
+			cout << elapsed_ms << " " << finalCost << " ";
+			solver->solution->store();
+		}
+		catch (...)
+		{
+			solver = new Solver(data);
+			solver->improve();
+		}
+	}
+	try
+	{
+		ofstream out("output.csv", ofstream::out | ofstream::app);
+		out.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		out << data->getFile() << ";" << elapsed_ms << " ms;" << finalCost << endl;
+		out.close();
+	}
+	catch (...)
+	{
+		ofstream out("output.csv", ofstream::out | ofstream::app);
+		out << data->getFile() << ";" << elapsed_ms << " ms;" << finalCost << endl;
+		out.close();
+	}
 
 	// Save 2 file with graph of solution and resource usage.
 	if (verbose == true) {
 		solver->storeSolutionGraphs();
 	}
-	cout << elapsed_ms << " " << finalCost << " ";
 
 	/*int option = 1;
 	int machine = -1;

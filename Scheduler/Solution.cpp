@@ -246,8 +246,11 @@ void Solution::moveWorstJob()
 	if (availableMachines.size() > 1) {
 		candidate = availableMachines[RandomGenerator::getInstance().randomInt(0, availableMachines.size() - 1)];
 	}
-	else {
+	else if (availableMachines.size() == 1) {
 		candidate = availableMachines.front();
+	}
+	else {
+		return;
 	}
 
 	worst->sendToMachine(candidate);
@@ -660,13 +663,21 @@ void Solution::store()
 {
 	string file = this->data->getSolutionFile();
 
-	ifstream f(file);
-	if (f.good()) {
-		vector<string>line;
-		getRowUtil(f, line);
-		if (atoi(line[1].c_str()) <= this->calcCost()) {
-			return;
+	try
+	{
+		ifstream f(file);
+		f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		if (f.good()) {
+			vector<string>line;
+			getRowUtil(f, line);
+			if (atoi(line[1].c_str()) <= this->calcCost()) {
+				return;
+			}
 		}
+	}
+	catch (...)
+	{
+
 	}
 
 	ofstream out(file);

@@ -7,7 +7,6 @@ using namespace std;
 class Solver
 {
 private:
-	Solution* solution;
 	double decay = 1;
 	double decayFactor = 0.99;
 	int solveBetterCounter = 0;
@@ -16,6 +15,7 @@ private:
 public:
 	Solver(DataContainer* data);
 	~Solver();
+	Solution* solution;
 
 	int improve();
 	int scheduleByMachineId(int machineId);
