@@ -345,6 +345,11 @@ void Machine::schedulingShuffle()
 	this->schedule();
 }
 
+bool Machine::expensiveBefore(const Machine * m1, const Machine * m2)
+{
+	return m1->cost > m2->cost;
+}
+
 void Machine::randomJobSwap()
 {
 	int i = RandomGenerator::getInstance().randomInt(0, this->scheduledJobs.size() - 1);
