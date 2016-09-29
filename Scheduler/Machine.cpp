@@ -148,6 +148,10 @@ void Machine::calcCostTo(JobListIterator iterator)
 
 void Machine::scheduleFrom(JobListIterator iterator)
 {
+	if (iterator == this->scheduledJobs.end()) {
+		return;
+	}
+
 	Job* previousJob;
 	Job* firstScheduledJob = *iterator;
 	// Get cost and release other resources.
@@ -260,7 +264,7 @@ bool Machine::addJobFront(Job * job)
 
 JobListIterator Machine::removeJob(Job * job)
 {
-	/*JobListIterator find = this->scheduledJobs.end();
+	JobListIterator find = this->scheduledJobs.end();
 	for (JobListIterator i = this->scheduledJobs.begin(); i != this->scheduledJobs.end(); ++i) {
 		if ((*i)->getId() == job->getId()) {
 			find = i;
@@ -270,9 +274,14 @@ JobListIterator Machine::removeJob(Job * job)
 
 	if (find == this->scheduledJobs.end()) {
 		runtime_error("The job is not scheduled");
-	}*/
-	this->scheduledJobs.remove(job);
-	return JobListIterator();
+	}
+
+	return this->scheduledJobs.erase(find);
+}
+
+JobListIterator Machine::removeJob(JobListIterator job)
+{
+	return this->scheduledJobs.erase(job);
 }
 
 void Machine::schedule()

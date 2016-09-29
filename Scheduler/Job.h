@@ -73,6 +73,7 @@ public:
 	// Utils methods.
 	string toString();
 	void shiftLeft(int amount);
+	void sendToMachine(Machine* m);
 
 	// Sort method. Used usually to put in order in <set> or <multiset>
 	static bool dueDateBefore(const Job* job1, const Job* job2);

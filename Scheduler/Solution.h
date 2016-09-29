@@ -38,6 +38,7 @@ private:
 	MachineVector machines;
 	ResourceInstantSetMap savedResources;
 	ResourceVector resources;
+	unordered_map<Job*, vector<Machine*>> machineForJob;
 public:
 
 	Solution(DataContainer* data);
@@ -86,5 +87,6 @@ public:
 	void schedule();
 	void smartRandomSchedule();
 	void removeIdleFromMachines();
+	void moveWorstJob();
 };
 

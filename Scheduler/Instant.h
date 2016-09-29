@@ -18,7 +18,7 @@ public:
 	struct InstantComparator
 	{
 		bool operator()(const Instant* a, const Instant* b) const {
-			return a->time < b->time/* || (a->time == b->time && a->quantity < b->quantity)*/;
+			return a->time < b->time || (a->time == b->time && a->quantity < b->quantity);
 		}
 	};
 

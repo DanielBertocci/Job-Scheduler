@@ -115,6 +115,16 @@ void Job::shiftLeft(int amount)
 	}
 }
 
+void Job::sendToMachine(Machine * m)
+{
+	//auto nextPositionInMachine = this->machine->removeJob(this->schedulingMachinePosition);
+	auto nextPositionInMachine = this->machine->removeJob(this);
+	this->machine->scheduleFrom(nextPositionInMachine);
+	this->machine = m;
+	m->addJobFront(this);
+	m->schedule();
+}
+
 string Job::toString()
 {
 	return "Job#" + to_string(this->id);

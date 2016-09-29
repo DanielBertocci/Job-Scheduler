@@ -44,8 +44,19 @@ int Solver::improve()
 			this->solution->randomJobSwapBetweenMachines();
 		}
 	}*/
-	if (RandomGenerator::getInstance().randomDouble() < 0.4) {
-		this->solution->relaxMachinesCosts();
+	if (RandomGenerator::getInstance().randomDouble() < 0.5) {
+		if (RandomGenerator::getInstance().randomDouble() < 0.5) {
+			this->solution->moveWorstJob();
+		}
+		else {
+			this->solution->relaxMachinesCosts();
+		}
+	}
+	else {
+		if (RandomGenerator::getInstance().randomDouble() < 0.5) {
+			this->solution->loadBest();
+			this->solution->randomJobSwapOnMachine();
+		}
 	}
 	this->solution->localSearch();
 	this->updateDecay();

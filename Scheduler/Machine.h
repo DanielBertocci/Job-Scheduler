@@ -29,7 +29,6 @@ private:
 	JobList previousScheduledJobs;
 	JobList scheduledJobs;
 	void calcCostTo(JobListIterator iterator);
-	void scheduleFrom(JobListIterator iterator);
 	void resetJobResourcesFrom(JobListIterator iterator);
 	list<Job*> getJobSchedulableOnMachine(Machine* machine);
 	int getStartForAllResources(Job* job, int start);
@@ -65,6 +64,7 @@ public:
 	bool addJob(Job* job);
 	bool addJobFront(Job* job);
 	JobListIterator removeJob(Job* job);
+	JobListIterator removeJob(JobListIterator job);
 	bool sendFirstAvailableJobToMachine(Machine* machine);
 	bool swapRandomJobToMachine(Machine* machine);
 	void bestScheduleForCurrentJobs();
@@ -72,6 +72,7 @@ public:
 	void previousSchedule();
 	void randomJobSwap();
 	void schedule();
+	void scheduleFrom(JobListIterator iterator);
 	JobListIterator tryRemoveIdle();
 	JobListIterator tryRemoveIdle(JobListIterator iterator);
 	void schedulingShuffle();

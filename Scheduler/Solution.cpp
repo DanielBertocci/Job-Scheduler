@@ -103,6 +103,14 @@ Solution::Solution(DataContainer * data)
 			new Machine(i, processingTime, setupTime)
 		);
 	}
+
+	for (Job* j : this->jobs) {
+		vector<Machine*> mAvailable;
+		for (int machineId : this->data->getAvailableMachinesByJob(j->getId())) {
+			mAvailable.push_back(this->getMachineById(machineId));
+		}
+		this->machineForJob[j] = mAvailable;
+	}
 }
 
 Solution::~Solution()
@@ -211,6 +219,23 @@ void Solution::removeIdleFromMachines()
 			}
 		}
 	}
+}
+
+void Solution::moveWorstJob()
+{
+	Job* worst = *Job::scheduling.rbegin();
+	vector<Machine*> availableMachines = this->machineForJob[worst];
+	Machine* candidate;
+
+	if (availableMachines.size() > 1) {
+		candidate = availableMachines[RandomGenerator::getInstance().randomInt(0, availableMachines.size() - 1)];
+	}
+	else {
+		candidate = availableMachines.front();
+	}
+
+	worst->sendToMachine(candidate);
+	candidate->bestScheduleForCurrentJobs();
 }
 
 void Solution::removeIdlesFromBest()
