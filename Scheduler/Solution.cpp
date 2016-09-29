@@ -660,14 +660,14 @@ void Solution::store()
 {
 	string file = this->data->getSolutionFile();
 
-	/*ifstream f(file);
+	ifstream f(file);
 	if (f.good()) {
 		vector<string>line;
 		getRowUtil(f, line);
 		if (atoi(line[1].c_str()) <= this->calcCost()) {
 			return;
 		}
-	}*/
+	}
 
 	ofstream out(file);
 	this->print(out);
