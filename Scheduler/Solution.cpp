@@ -200,7 +200,7 @@ void Solution::smartRandomSchedule()
 
 void Solution::removeIdleFromMachines()
 {
-	random_shuffle(machines.begin(), machines.end());
+	/*random_shuffle(machines.begin(), machines.end());
 	list<Machine*> machines(this->machines.begin(), this->machines.end());
 	unordered_map<Machine*, JobListIterator> iterators;
 
@@ -218,7 +218,15 @@ void Solution::removeIdleFromMachines()
 				iterators[m] = i;
 			}
 		}
-	}
+	}*/
+	int cost;
+	do {
+		cost = this->calcCost();
+		sort(this->machines.begin(), this->machines.end(), Machine::expensiveBefore);
+		for (Machine* m : this->machines) {
+			m->schedule();
+		}
+	} while (this->calcCost() < cost);
 }
 
 void Solution::moveWorstJob()
