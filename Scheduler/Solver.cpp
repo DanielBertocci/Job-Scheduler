@@ -26,7 +26,7 @@ Solver::Solver(DataContainer * data)
 	this->solution->randomSchedule();
 	this->solution->schedule();
 	this->solution->saveBest();
-	cout << "Start cost: " << this->solution->calcCost() << endl;
+	//cout << "Start cost: " << this->solution->calcCost() << endl;
 }
 
 Solver::~Solver()
@@ -36,31 +36,25 @@ Solver::~Solver()
 int Solver::improve()
 {
 	int cost = this->solution->calcCost();
-	/*for (int i = 0; i < this->solution->getJobCount() / 2; ++i) {
-		if (RandomGenerator::getInstance().randomDouble() < 0.5) {
-			this->solution->randomJobToAnotherMachine();
-		}
-		else {
-			this->solution->randomJobSwapBetweenMachines();
-		}
-	}*/
-	if (RandomGenerator::getInstance().randomDouble() < 0.5) {
-		if (RandomGenerator::getInstance().randomDouble() < 0.5) {
-			this->solution->moveWorstJob();
-		}
-		else {
-			this->solution->relaxMachinesCosts();
-		}
-	}
-	else {
-		if (RandomGenerator::getInstance().randomDouble() < 0.5) {
-			this->solution->loadBest();
+	if (RandomGenerator::getInstance().randomDouble() < 0.75) {
+		if (RandomGenerator::getInstance().randomDouble() < 0.01) {
 			this->solution->randomJobSwapOnMachine();
 		}
+		this->solution->moveWorstJob();
 	}
-	this->solution->localSearch();
-	this->updateDecay();
+	else {
+		this->solution->sendToBetterProcessing();
+	}
+	this->solution->saveBest();
+	if (RandomGenerator::getInstance().randomDouble() < 0.01) {
+		this->solution->loadBest();
+		this->solution->randomJobSwapOnMachine();
+		this->solution->sendToBetterProcessing();
+	}
+	
+	this->solution->saveBest();
 
+	this->updateDecay();
 	return this->solution->calcCost();
 }
 
@@ -100,8 +94,17 @@ void Solver::loadBest()
 
 int Solver::storeSolution()
 {
+
 	this->solution->loadBest();
+	int cost = this->solution->calcCost();
+	this->solution->save();
+
 	this->solution->removeIdleFromMachines();
+	
+	if (this->solution->calcCost() > cost) {
+		this->solution->load();
+	}
+
 	this->solution->store();
 	return this->solution->calcCost();
 }

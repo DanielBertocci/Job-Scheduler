@@ -345,6 +345,25 @@ void Machine::schedulingShuffle()
 	this->schedule();
 }
 
+Machine* Machine::sendJobWithSmallerProcessingTimeOnAnotherMachine()
+{
+	Job* job = nullptr;
+	Job* current = nullptr;
+
+	for (auto i = this->scheduledJobs.rbegin(); i != this->scheduledJobs.rend(); ++i) {
+		current = *i;
+		if (current->getBestMachine() != this) {
+			job = current;
+			break;
+		}
+	}
+
+	if (job == nullptr) return nullptr;
+	job->sendToMachine(job->getBestMachine());
+
+	return job->getBestMachine();
+}
+
 bool Machine::expensiveBefore(const Machine * m1, const Machine * m2)
 {
 	return m1->cost > m2->cost;

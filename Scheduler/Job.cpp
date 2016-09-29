@@ -61,6 +61,11 @@ Machine * Job::getMachine()
 	return this->machine;
 }
 
+Machine * Job::getBestMachine()
+{
+	return this->bestMachine;
+}
+
 void Job::reset()
 {
 	this->machine = nullptr;
@@ -100,6 +105,11 @@ void Job::setSchedule(int start, int processingTime)
 void Job::setMachine(Machine * machine)
 {
 	this->machine = machine;
+}
+
+void Job::setBestMachine(Machine * machine)
+{
+	this->bestMachine = machine;
 }
 
 int Job::getCost()

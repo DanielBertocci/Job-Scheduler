@@ -76,6 +76,7 @@ public:
 	JobListIterator tryRemoveIdle();
 	JobListIterator tryRemoveIdle(JobListIterator iterator);
 	void schedulingShuffle();
+	Machine* sendJobWithSmallerProcessingTimeOnAnotherMachine();
 
 	static bool expensiveBefore(const Machine* m1, const Machine* m2);
 };

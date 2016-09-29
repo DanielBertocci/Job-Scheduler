@@ -24,7 +24,8 @@ private:
 	int readyDate;
 	int dueDate;
 	int penalty;
-
+	Machine* bestMachine;
+	
 	// Required resources needed to execute the job.
 	ResourceQuantityMap resources;
 	ResourceInstantPairIteratorMap instants;
@@ -59,10 +60,12 @@ public:
 	int getResourceCount() const;
 	int getStart();
 	Machine* getMachine();
+	Machine* getBestMachine();
 	ResourceQuantityMap getRequiredResources() const;
 
 	// Setters.
 	void setMachine(Machine* machine);
+	void setBestMachine(Machine* machine);
 	void setSchedule(int start, int processingTime);
 	void setInstants(Resource* resource, InstantIteratorSetPair interval);
 

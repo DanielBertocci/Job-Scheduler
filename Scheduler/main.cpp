@@ -45,8 +45,7 @@ INIT:
 		newCost = solver->improve();
 		if (newCost < cost) {
 			cost = newCost;
-			cout << "Current best: " << cost << endl;
-			solver->saveBest();
+			//cout << "Current best: " << cost << endl;
 		}
 
 		end = chrono::system_clock::now();
@@ -63,9 +62,9 @@ INIT:
 	if (verbose == true) {
 		solver->storeSolutionGraphs();
 	}
-	cout << elapsed_ms << " " << finalCost << " " << counter;
+	cout << elapsed_ms << " " << finalCost << " ";
 
-	int option = 1;
+	/*int option = 1;
 	int machine = -1;
 	while (option > 0) {
 		cout << endl << "Option: ";
@@ -94,6 +93,6 @@ INIT:
 			break;
 
 		}
-	}
+	}*/
 	return 0;
 }

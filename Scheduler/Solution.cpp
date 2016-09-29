@@ -110,6 +110,14 @@ Solution::Solution(DataContainer * data)
 			mAvailable.push_back(this->getMachineById(machineId));
 		}
 		this->machineForJob[j] = mAvailable;
+
+		pair<Machine*, int> bestProcessingTime(mAvailable.front(), mAvailable.front()->getJobProcessingTime(j));
+		for (Machine* m : mAvailable) {
+			if (m->getJobProcessingTime(j) < bestProcessingTime.second) {
+				bestProcessingTime = pair<Machine*, int>(m, m->getJobProcessingTime(j));
+			}
+		}
+		j->setBestMachine(bestProcessingTime.first);
 	}
 }
 
@@ -244,6 +252,15 @@ void Solution::moveWorstJob()
 
 	worst->sendToMachine(candidate);
 	candidate->bestScheduleForCurrentJobs();
+}
+
+void Solution::sendToBetterProcessing()
+{
+	int indexFrom = RandomGenerator::getInstance().randomInt(0, this->machines.size() - 1);
+	Machine* from = this->machines[indexFrom];
+	Machine* to = from->sendJobWithSmallerProcessingTimeOnAnotherMachine();
+	if (to == nullptr) return;
+	to->bestScheduleForCurrentJobs();
 }
 
 void Solution::removeIdlesFromBest()
@@ -487,6 +504,11 @@ void Solution::printGraph()
 		ss << "<b>Resources:</b> ";
 		for (auto p : job->getRequiredResources()) {
 			ss << "(<b>" << p.first->getId() << "</b>," << p.second << ") ";
+		}
+		ss << "<br>";
+		ss << "<b>Machines:</b> ";
+		for (Machine* p : this->machineForJob[job]) {
+			ss << "<b>#" << p->getId() << "</b> ";
 		}
 		ss << "</div>";
 		ss << "',";

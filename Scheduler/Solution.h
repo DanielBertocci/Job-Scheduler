@@ -88,5 +88,6 @@ public:
 	void smartRandomSchedule();
 	void removeIdleFromMachines();
 	void moveWorstJob();
+	void sendToBetterProcessing();
 };
 
