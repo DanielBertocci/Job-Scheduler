@@ -17,6 +17,7 @@ bool Solution::saveBest()
 	}
 
 	for (Machine* machine : this->machines) {
+		machine->saveCost();
 		this->savedSchedule[machine] = machine->getSchedule();
 	}
 
@@ -40,6 +41,7 @@ void Solution::loadBest()
 		}
 	}
 	for (Machine* machine : this->machines) {
+		machine->loadCost();
 		machine->setSchedule(this->savedSchedule[machine]);
 	}
 }
@@ -148,14 +150,14 @@ int Solution::getSavedCost()
 int Solution::calcCost()
 {
 	int cost = 0;
-	/*for (Machine* machine : this->machines)
+	for (Machine* machine : this->machines)
 	{
 		cost += machine->getCost();
-	}*/
-	for (Job* job : this->jobs)
+	}
+	/*for (Job* job : this->jobs)
 	{
 		cost += job->getCost();
-	}
+	}*/
 	this->cost = cost;
 	return cost;
 }
@@ -318,7 +320,7 @@ void Solution::removeIdlesFromBest()
 
 void Solution::schedule()
 {
-	/*random_shuffle(this->machines.begin(), this->machines.end());*/
+	random_shuffle(this->machines.begin(), this->machines.end());
 	for (Machine* machine : this->machines)
 	{
 		machine->schedule();

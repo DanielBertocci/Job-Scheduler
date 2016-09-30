@@ -8,7 +8,7 @@ class Solver
 {
 private:
 	double decay = 1;
-	double decayFactor = 0.99;
+	double decayFactor = 0.9;
 	int solveBetterCounter = 0;
 	bool accept(int oldCost, int newCost);
 

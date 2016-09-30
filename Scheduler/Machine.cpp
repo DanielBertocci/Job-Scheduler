@@ -289,6 +289,16 @@ void Machine::schedule()
 	this->scheduleFrom(this->scheduledJobs.begin());
 }
 
+void Machine::saveCost()
+{
+	this->savedCost = this->cost;
+}
+
+void Machine::loadCost()
+{
+	this->cost = this->savedCost;
+}
+
 JobListIterator Machine::tryRemoveIdle()
 {
 	return this->tryRemoveIdle(this->scheduledJobs.begin());

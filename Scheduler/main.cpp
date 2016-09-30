@@ -46,7 +46,10 @@ int main(int argc, char **argv) {
 			newCost = solver->improve();
 			if (newCost < cost) {
 				cost = newCost;
-				//cout << "Current best: " << cost << endl;
+				cout << "Current best: " << cost << endl;
+			}
+			if (cost == 0) {
+				solver->solution->schedule();
 			}
 
 			end = chrono::system_clock::now();
@@ -107,15 +110,12 @@ int main(int argc, char **argv) {
 		solver->storeSolutionGraphs();
 	}
 
-	/*int option = 1;
+	int option = 1;
 	int machine = -1;
 	while (option > 0) {
 		cout << endl << "Option: ";
 		cin >> option;
 		switch (option) {
-		case 0:
-			goto INIT;
-			break;
 		case 1:
 			cout << "Machine: ";
 			cin >> machine;
@@ -136,6 +136,6 @@ int main(int argc, char **argv) {
 			break;
 
 		}
-	}*/
+	}
 	return 0;
 }

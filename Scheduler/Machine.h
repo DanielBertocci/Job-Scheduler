@@ -22,6 +22,7 @@ private:
 	int id;
 	int time = 0;
 	int cost = 0;
+	int savedCost = 0;
 	int previousCost;
 	bool scheduled = false;
 	JobProcessingTimeMap processingTime;
@@ -72,6 +73,8 @@ public:
 	void previousSchedule();
 	void randomJobSwap();
 	void schedule();
+	void saveCost();
+	void loadCost();
 	void scheduleFrom(JobListIterator iterator);
 	JobListIterator tryRemoveIdle();
 	JobListIterator tryRemoveIdle(JobListIterator iterator);

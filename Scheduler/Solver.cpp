@@ -96,15 +96,9 @@ int Solver::storeSolution()
 {
 
 	this->solution->loadBest();
-	int cost = this->solution->calcCost();
-	this->solution->save();
 
 	this->solution->removeIdleFromMachines();
-	
-	if (this->solution->calcCost() > cost) {
-		this->solution->load();
-	}
-
+	this->solution->schedule();
 	this->solution->store();
 	return this->solution->calcCost();
 }
