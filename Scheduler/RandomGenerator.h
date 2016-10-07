@@ -18,6 +18,7 @@ protected:
 	RandomGenerator();
 
 public:
+	static int seed;
 	static RandomGenerator& getInstance();
 
 	RandomGenerator(RandomGenerator const&) = delete;             // Copy construct

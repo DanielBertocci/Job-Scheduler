@@ -1,7 +1,10 @@
 #include "RandomGenerator.h"
-
+#include <iostream>
+int RandomGenerator::seed = 0;
 RandomGenerator::RandomGenerator() {
 	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+	RandomGenerator::seed = seed;
+	//cout << "default_random_engine seed: " << seed << endl;
 	gen = default_random_engine(seed);
 }
 

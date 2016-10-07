@@ -37,9 +37,9 @@ int Solver::improve()
 {
 	int cost = this->solution->calcCost();
 	if (RandomGenerator::getInstance().randomDouble() < 0.75) {
-		if (RandomGenerator::getInstance().randomDouble() < 0.01) {
+		/*if (RandomGenerator::getInstance().randomDouble() < 0.01) {
 			this->solution->randomJobSwapOnMachine();
-		}
+		}*/
 		this->solution->moveWorstJob();
 	}
 	else {
@@ -48,11 +48,12 @@ int Solver::improve()
 	this->solution->saveBest();
 	if (RandomGenerator::getInstance().randomDouble() < 0.01) {
 		this->solution->loadBest();
+		this->solution->relaxMachinesTimes();
 		this->solution->randomJobSwapOnMachine();
 		this->solution->sendToBetterProcessing();
+		this->solution->saveBest();
 	}
-	
-	this->solution->saveBest();
+
 
 	this->updateDecay();
 	return this->solution->calcCost();
@@ -83,6 +84,7 @@ void Solver::saveBest()
 int Solver::tryAlgorithm()
 {
 	this->solution->removeIdleFromMachines();
+	this->storeSolution();
 	this->solution->printGraph();
 	return this->solution->calcCost();
 }
@@ -96,9 +98,10 @@ int Solver::storeSolution()
 {
 
 	this->solution->loadBest();
-
 	this->solution->removeIdleFromMachines();
-	this->solution->schedule();
+	this->solution->saveBest();
+	this->solution->loadBest();
+
 	this->solution->store();
 	return this->solution->calcCost();
 }

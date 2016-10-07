@@ -40,6 +40,8 @@ private:
 	ResourceVector resources;
 	unordered_map<Job*, vector<Machine*>> machineForJob;
 public:
+	int seed;
+	int iterations;
 
 	Solution(DataContainer* data);
 	~Solution();

@@ -390,6 +390,12 @@ void Machine::randomJobSwap()
 	auto second = next(this->scheduledJobs.begin(), j);
 
 	iter_swap(first, second);
+	if (i <= j) {
+		this->scheduleFrom(first);
+	}
+	else {
+		this->scheduleFrom(second);
+	}
 }
 
 void Machine::improveTryAllSwap()

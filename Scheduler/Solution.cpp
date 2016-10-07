@@ -168,7 +168,10 @@ void Solution::improveResources()
 
 void Solution::randomSchedule()
 {
-	srand(time(0));
+	int seed = time(0);
+	this->seed = seed;
+	//cout << "srand seed :" << seed << endl;
+	srand(seed);
 	random_shuffle(this->jobs.begin(), this->jobs.end());
 
 	this->reset();
@@ -426,7 +429,7 @@ void Solution::print(ostream & out)
 	int cost = this->calcCost();
 	sort(this->jobs.begin(), this->jobs.end(), Job::startBefore);
 
-	out << "TWT;" << cost << ";;" << endl;
+	out << "TWT;" << cost << ";" << this->seed << ";" << RandomGenerator::seed << ";" << this->iterations << endl;
 	out << "JobId;MachineId;Start;Completion" << endl;
 
 	for (Job* job : this->jobs)

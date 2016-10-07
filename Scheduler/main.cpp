@@ -39,6 +39,8 @@ int main(int argc, char **argv) {
 	int cost = INT_MAX;
 	int newCost = cost;
 	int counter = 0;
+	int iiii = counter;
+
 	try
 	{
 		while (elapsed_ms < time && cost > 0) {
@@ -46,10 +48,10 @@ int main(int argc, char **argv) {
 			newCost = solver->improve();
 			if (newCost < cost) {
 				cost = newCost;
-				cout << "Current best: " << cost << endl;
+				//cout << "Current best: " << cost << endl;
 			}
 			if (cost == 0) {
-				solver->solution->schedule();
+				break;
 			}
 
 			end = chrono::system_clock::now();
@@ -68,7 +70,7 @@ int main(int argc, char **argv) {
 			solver->improve();
 		}
 	}
-
+	solver->solution->iterations = counter;
 	int finalCost;
 
 	try
@@ -109,8 +111,9 @@ int main(int argc, char **argv) {
 	if (verbose == true) {
 		solver->storeSolutionGraphs();
 	}
+	//cout << "Iterations: " << counter << endl;
 
-	int option = 1;
+	/*int option = 1;
 	int machine = -1;
 	while (option > 0) {
 		cout << endl << "Option: ";
@@ -132,10 +135,10 @@ int main(int argc, char **argv) {
 			break;
 		case 4:
 			cout << "New cost: " << solver->tryAlgorithm();
-			cout << "Tryed." << endl;
+			cout << endl;
 			break;
 
 		}
-	}
+	}*/
 	return 0;
 }
